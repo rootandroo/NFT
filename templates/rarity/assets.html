@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div id="app"></div>
+    <script id="json_data" type="application/json">
+        {
+            "urls": {
+                "list_project": "{% url 'project-list' %}",
+                "list_collection": "{% url 'collection-list' %}",
+                "list_asset": "{% url 'asset-list' %}"
+            }
+        }
+    </script>
+{% endblock %}
