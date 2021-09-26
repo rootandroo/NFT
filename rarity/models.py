@@ -1,9 +1,12 @@
-from re import I
 from django.db import connections, models
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
     twitter = models.URLField(max_length=23, blank=True)
+
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
@@ -13,6 +16,9 @@ class Collection(models.Model):
     policy_id = models.CharField(max_length=56, primary_key=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='collections')
     property_keys = models.JSONField(null=True)
+
+    class Meta:
+        ordering = ['project']
 
     def __str__(self):
         return f'{self.project}: {self.property_keys}'
@@ -54,14 +60,21 @@ class Collection(models.Model):
 
 class Asset(models.Model):
     name = models.CharField(max_length=32, primary_key=True)
+    num = models.PositiveBigIntegerField()
     policy_id = models.CharField(max_length=56)
     fingerprint = models.CharField(max_length=44, unique=True)
     quantity = models.PositiveBigIntegerField()
     mint_tx_hash = models.CharField(max_length=64)
     onchain_metadata = models.JSONField()
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
-
-    def __str__(self):
+    
+    @property
+    def ascii_name(self):
         bytes_obj = bytes.fromhex(self.name)
         return bytes_obj.decode('ASCII')
     
+    class Meta:
+        ordering = ['num']
+
+    def __str__(self):
+        return self.ascii_name

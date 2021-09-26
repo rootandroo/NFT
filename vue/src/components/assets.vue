@@ -1,19 +1,21 @@
 <template>
-    <b-card-group 
-     :next="next"
-     @scroll.passive="fetchNextPage(next)"
-     class="pl-4 pb-4">
-        <b-card 
+    <transition-group 
+     name="list" 
+     class="pl-4 pb-4 card-group" 
+     tag="div"
+     :next="next">
+        <b-card
          v-for="asset in assets" 
          :key="asset.name"
          :img-src="fetchImagePath(asset.onchain_metadata.image)"
-         class="mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
+         class="list-item mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
             {{ asset.onchain_metadata.name }} 
         </b-card>
-    </b-card-group>    
+    </transition-group>
 </template>
 
 <script>
+import _ from 'lodash'
 import axios from 'axios'
 const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
 const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
@@ -25,12 +27,13 @@ export default {
             axios
                 .get(URLS.list_asset, { params: { policy_id: event} }, { headers:headers })
                 .then(response => {
-                    this.assets = response.data.results
-                    this.next = response.data.next
                     this.fetchDistribution(event)
+                    this.next = response.data.next
+                    this.assets = response.data.results
                 })
         },
-        fetchNextPage: function(url) {
+        fetchNextPage: _.throttle(function() {
+            var url = this.next
             var elm = document.querySelector('.card-group')
             var distance = elm.scrollTop
             var offset = elm.offsetHeight
@@ -43,7 +46,7 @@ export default {
                         this.next = response.data.next
                     })
             }
-        },
+        }, 1500),
         fetchImagePath: ipfs => {
             if (ipfs.includes("/")) {
                 var index = ipfs.lastIndexOf("/")
@@ -58,13 +61,12 @@ export default {
                 .then(response => {
                     this.distribution =  response.data.distribution
                 })
-        } 
+        },
     },
     data () {
         return {
             assets: null,
             next: null,   
-            distribution: null,
         }
     },
     created () {
@@ -72,12 +74,17 @@ export default {
             this.assets = null
             this.next = null
             this.fetchAssets(event)
+            document.querySelector('.card-group').addEventListener(
+                'scroll', () => this.fetchNextPage())
         })
+    },
+    destroyed () {
+        document.querySelector('.card-group').removeEventListener('scroll')
     }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .card-group {
         display: grid;
         overflow-y: auto;
@@ -88,8 +95,9 @@ export default {
     .card-group::-webkit-scrollbar {
         width: 20px;
     }
+
     .card-group::-webkit-scrollbar-thumb {
-        background-color: #74eda5;
+        background-color: white;
         border-radius: 20px;
         border: 6px solid transparent;
         background-clip: content-box;
@@ -97,5 +105,17 @@ export default {
     .card, img {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         text-align: center;
+    }
+
+    .list-item {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .list-enter-active, .list-leave-active {
+        transition: opacity 2s;
+    }
+    .list-enter, .list-leave-to {
+        opacity: 0;
     }
 </style>

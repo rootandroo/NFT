@@ -1,17 +1,28 @@
 <template>
-    <div id='sidebar' :class="['bg-secondary', 'sticky-top', {'active':is_active}]">
-        <b-form-group class="w-100 px-3 mt-3" inline>
-            <h3 class="text-dark">Select Project</h3>
-            <b-form-select 
-                class="mb-5" 
-                :options="projects"
-                @change="fetchPolicies">
+    <div id='sidebar' :class="['bg-dark', 'sticky-top', {'active':sidebar}]">
+        <b-container>
+            <b-form-group class="p-3 w-100 mt-3" inline>
+                <h3 class="text-light">Select Project</h3>
+                <b-form-select 
+                   class="mb-5 bg-light" 
+                  :options="projects"
+                  @change="fetchPolicies">
+                  </b-form-select>
+                <h3 class="text-light">Select Policy</h3>
+                <b-form-select
+                  v-model="selected"
+                  class="bg-light"
+                  :options="policies"
+                  @change="emitAssets">
                 </b-form-select>
-            <h3 class="text-dark">Select Policy</h3>
-            <b-form-select
-                :options="policies"
-                @change="emitAssets"></b-form-select>
-        </b-form-group>
+                <div v-if="selected" class="mt-5 text-center">
+                    <b-button variant="light">View Rarity</b-button>
+                </div>
+            </b-form-group>
+            <footer class="footer mb-3">
+                <b-button block variant="light">Donate</b-button>
+            </footer>
+        </b-container>
     </div>
 </template>
 
@@ -29,7 +40,6 @@ export default {
                 { params: { project: event, fields: 'policy_id'} },
                 { headers:headers })
             .then(response => {
-                console.log(response.data.results)
                 this.policies = response.data.results.map(
                     collection => collection.policy_id)
             })
@@ -42,12 +52,13 @@ export default {
       return {
           projects: null,
           policies: null,
-          is_active: true,
+          sidebar: true,
+          selected: ''
       }
   },
   created () {
       this.$root.$on('toggle-sidebar', () => {
-          this.is_active = !this.is_active
+          this.sidebar = !this.sidebar
       });
 
       // fetch project names 
@@ -72,9 +83,14 @@ export default {
         min-width: 300px;
         max-width: 300px;
         height: 100%;
-        transition: all 0.5s;
+        transition: all 0.3s;
     }
     #sidebar.active {
         margin-left: -300px;
+    }
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 90%;
     }
 </style>

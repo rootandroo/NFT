@@ -1,10 +1,10 @@
-import asyncio, requests, os
+import asyncio, requests, os, re
 from aiohttp import ClientSession
 from rarity.models import Asset
 from aiolimiter import AsyncLimiter
 
 
-headers = {'project_id': os.getenv('API_KEY')}
+headers = {'project_id': 'wOVix9BLf1h5tWQ07hQOr9glVdlM8Fsn'}
 
 
 def fetch_all_assets(policy_id):
@@ -76,6 +76,7 @@ def create_asset_objs(asset_list, collection):
     for asset in asset_list:
         objs.append(Asset(
             name=asset['asset_name'],
+            num=get_num(asset['asset_name']),
             policy_id=asset['policy_id'],
             fingerprint=asset['fingerprint'],
             quantity=asset['quantity'],
@@ -85,6 +86,14 @@ def create_asset_objs(asset_list, collection):
     return objs
 
 
+def get_num(hex):
+    # hex to str
+    bytes_obj = bytes.fromhex(hex)
+    string = bytes_obj.decode('ASCII')
+    match = re.findall('\d+$', string)
+    return int(match[0])
+
+    
 def is_policy_id(policy_id):
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/policy/{policy_id}'
     r = requests.get(url, {'page': 1}, headers=headers)

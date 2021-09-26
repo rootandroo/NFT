@@ -4,7 +4,7 @@
             <img src="../assets/logo.png" alt="logo">
         </b-navbar-brand>
         <b-navbar-nav class="my-auto ml-auto">
-            <b-button v-on:click="emitToggle" variant="secondary" class="mr-2">Search</b-button>
+            <b-button v-on:click="emitToggle" variant="light" class="mr-2">Search</b-button>
         </b-navbar-nav>
     </b-navbar>
 </template>
