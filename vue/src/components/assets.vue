@@ -1,5 +1,8 @@
 <template>
+    <transition name="list" v-on:enter="addScrollListener">
     <transition-group 
+     mode="out-in"
+     v-if="assets"
      name="list" 
      class="pl-4 pb-4 card-group" 
      tag="div"
@@ -12,6 +15,7 @@
             {{ asset.onchain_metadata.name }} 
         </b-card>
     </transition-group>
+    </transition>
 </template>
 
 <script>
@@ -27,7 +31,6 @@ export default {
             axios
                 .get(URLS.list_asset, { params: { policy_id: event} }, { headers:headers })
                 .then(response => {
-                    this.fetchDistribution(event)
                     this.next = response.data.next
                     this.assets = response.data.results
                 })
@@ -55,13 +58,9 @@ export default {
             var url = 'https://ipfs.blockfrost.dev/ipfs/' + ipfs
             return url
         },
-        fetchDistribution: function(policy_id) {
-            axios
-                .get(URLS.list_collection + policy_id, {headers:headers})
-                .then(response => {
-                    this.distribution =  response.data.distribution
-                })
-        },
+        addScrollListener: function () {
+            document.querySelector('.card-group').addEventListener('scroll', () => this.fetchNextPage())
+        }
     },
     data () {
         return {
@@ -72,14 +71,14 @@ export default {
     created () {
         this.$root.$on('fetch-assets', (event) => {
             this.assets = null
-            this.next = null
-            this.fetchAssets(event)
-            document.querySelector('.card-group').addEventListener(
-                'scroll', () => this.fetchNextPage())
+            setTimeout(function () { this.fetchAssets(event) }.bind(this), 1000)
         })
     },
     destroyed () {
-        document.querySelector('.card-group').removeEventListener('scroll')
+        document.querySelector('.card-group').removeEventListener('scroll', () => this.fetchNextPage())
+        this.$$root.$off('fetch-assets', (event) => {
+            this.fetchAssets(event)
+        })
     }
 }
 </script>
@@ -113,8 +112,9 @@ export default {
     }
     
     .list-enter-active, .list-leave-active {
-        transition: opacity 2s;
+        transition: opacity 1s;
     }
+    
     .list-enter, .list-leave-to {
         opacity: 0;
     }

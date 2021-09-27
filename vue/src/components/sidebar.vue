@@ -10,14 +10,18 @@
                   </b-form-select>
                 <h3 class="text-light">Select Policy</h3>
                 <b-form-select
-                  v-model="selected"
+                  v-model="policy_id"
                   class="bg-light"
                   :options="policies"
-                  @change="emitAssets">
+                  @change="emitFetchAssets">
                 </b-form-select>
-                <div v-if="selected" class="mt-5 text-center">
-                    <b-button variant="light">View Rarity</b-button>
+                <transition name="asset_rarity">
+                <div v-if="policy_id" class="mt-5 text-center">
+                    <b-button id="asset_rarity" variant="light" v-on:click="toggleAssetRarity">
+                        {{asset_rarity ? 'View Rarity' : 'View Asset'}}
+                    </b-button>
                 </div>
+                </transition>
             </b-form-group>
             <footer class="footer mb-3">
                 <b-button block variant="light">Donate</b-button>
@@ -34,6 +38,14 @@ const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 export default {
   name: 'sidebar',
   methods: {
+      fetchProjects: function() { 
+        axios
+            .get(URLS.list_project, { headers: headers })
+            .then(response => {
+                this.projects = response.data.results.map(
+                    project => project.name)
+            })
+      },
       fetchPolicies: function(event) {
           axios
             .get(URLS.list_collection, 
@@ -44,8 +56,23 @@ export default {
                     collection => collection.policy_id)
             })
       },
-      emitAssets: function(event) {
-          this.$root.$emit('fetch-assets', event)
+      // if currently viewing assets emit event to assets component
+      emitFetchAssets: function() {
+          this.$root.$emit('fetch-assets', this.policy_id)
+      },
+      emitFetchRarity: function() {
+          this.$root.$emit('fetch-rarity', this.policy_id)
+      },
+      // return rarity distribution
+      fetchDistribution: function() {
+          axios
+            .get(URLS.list_collection + this.policy_id, {headers:headers})
+            .then(response => {
+                console.log(response.data.distribution)
+            })
+      },
+      toggleAssetRarity: function() {
+          this.asset_rarity = !this.asset_rarity
       },
   },
   data () {
@@ -53,21 +80,15 @@ export default {
           projects: null,
           policies: null,
           sidebar: true,
-          selected: ''
+          policy_id: '',
+          asset_rarity: true
       }
   },
   created () {
+      this.fetchProjects()
       this.$root.$on('toggle-sidebar', () => {
           this.sidebar = !this.sidebar
       });
-
-      // fetch project names 
-      axios
-        .get(URLS.list_project, { headers: headers })
-        .then(response => {
-            this.projects = response.data.results.map(
-                project => project.name)
-        })
   },
   beforeDestroy() {
     // removing $root listener
