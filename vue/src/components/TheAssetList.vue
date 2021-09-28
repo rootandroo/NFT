@@ -1,23 +1,23 @@
 <template>
-    <div id="asset-wrapper">
-    <transition v-if="assets" name="list">
-    <transition-group 
-     v-if="assets"
-     :next="next" 
-     tag="div"
-     name="list"
-     class="pl-4 pb-4 card-group">
-        <b-card
-         v-for="asset in assets" 
-         :key="asset.name"
-         :img-src="fetchImagePath(asset.onchain_metadata.image)"
-         class="mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
-            {{ asset.onchain_metadata.name }} 
-        </b-card>
-    </transition-group>
+    <transition name="asset-list">
+        <div id="asset-wrapper" v-if="assets">
+            <transition-group 
+            v-if="assets"
+            :next="next" 
+            tag="div"
+            name="list-append"
+            class="pl-4 pb-4 card-group">
+                <b-card
+                v-for="asset in assets" 
+                :key="asset.name"
+                :img-src="fetchImagePath(asset.onchain_metadata.image)"
+                class="mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
+                    {{ asset.onchain_metadata.name }} 
+                </b-card>
+            </transition-group>
+            <div id="observe" v-if="assets" :key="next" v-observe-visibility="handleScroll"></div>
+        </div>
     </transition>
-    <div id="observe" v-if="assets" :key="next" v-observe-visibility="handleScroll"></div>
-    </div>
 </template>
 
 <script>
@@ -56,7 +56,6 @@ export default {
 
     methods: {
         fetchAssets: function(policy_id, queryList=null) {
-            console.log(queryList)
             axios
                 .get(URLS.list_asset, { params: {
                      policy_id: policy_id,
@@ -95,35 +94,56 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    #asset-wrapper {
-        overflow-y: auto;
-        height: calc(100% - 68px - 10px);
-    }
-    #asset-wrapper::-webkit-scrollbar {
-        width: 20px;
-    }
+.card-group {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+.card {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+}
+img {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+}
 
-    #asset-wrapper::-webkit-scrollbar-thumb {
-        background-color: white;
-        border-radius: 20px;
-        border: 6px solid transparent;
-        background-clip: content-box;
-    }
-    .card-group {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-    }
+.asset-list-enter-active {
+	transition: opacity .5s ease-in-out;
+}
+.asset-list-leave-active {
+	transition: opacity .5s ease-in-out;
+}
+.asset-list-enter {
+	opacity: 0;
+}
+.asset-list-leave-to {
+	opacity: 0;
+}
 
-    .card, img {
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        text-align: center;
-    }
-    
-    .list-enter-active, .list-leave-active {
-        transition: opacity .5s ease-in-out;
-    }
-    
-    .list-enter, .list-leave-to {
-        opacity: 0;
-    }
+
+.list-append-enter-active {
+	transition: opacity 1.5s ease-in-out;
+}
+.list-append-leave-active {
+	transition: opacity 1.5s ease-in-out;
+}
+.list-append-enter {
+	opacity: 0;
+}
+.list-append-leave-to {
+	opacity: 0;
+}
+#asset-wrapper {
+	overflow-y: auto;
+	height: calc(100% - 68px - 10px);
+	&::-webkit-scrollbar {
+		width: 20px;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: white;
+		border-radius: 20px;
+		border: 6px solid transparent;
+		background-clip: content-box;
+	}
+}
 </style>

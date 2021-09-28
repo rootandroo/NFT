@@ -4,7 +4,7 @@ from rarity.models import Asset
 from aiolimiter import AsyncLimiter
 
 
-headers = {'project_id': 'wOVix9BLf1h5tWQ07hQOr9glVdlM8Fsn'}
+headers = {'project_id': 'WAt3iqJeKl7mwX9mLEesc51Sjvptn114'}
 
 
 def fetch_all_assets(policy_id):
@@ -76,7 +76,6 @@ def create_asset_objs(asset_list, collection):
     for asset in asset_list:
         objs.append(Asset(
             name=asset['asset_name'],
-            num=get_num(asset['asset_name']),
             policy_id=asset['policy_id'],
             fingerprint=asset['fingerprint'],
             quantity=asset['quantity'],

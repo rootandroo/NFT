@@ -1,5 +1,5 @@
 <template>
-    <transition v-if="distribution" name="item" mode="out-in" appear>
+    <transition v-if="distribution" name="dist" mode="out-in" appear>
                 <div class="attribute-list-wrapper w-100">
                     <h5 class="w-100 px-3 text-light">Distribution</h5>
                     <b-form-checkbox-group
@@ -19,7 +19,7 @@
                                 v-b-toggle="trait"
                                 size="sm">{{trait}}
                             </b-button>
-                            <b-collapse :id="trait">
+                            <b-collapse :id="trait" class="pr-4">
                                 <b-row class="pl-4"
                                 v-for="[option, count] in Object.entries(obj)"
                                 :key="option">
@@ -63,8 +63,8 @@ export default {
   watch: {
     policy_id: function (val) {
         this.distribution = null
-        setTimeout(function () {
-            this.setDistribution(val)}.bind(this), 50)
+        this.queryList = []
+        this.setDistribution(val)
     },
     queryList: function(val) {
         this.$emit('queryListFromDist', val)
@@ -99,5 +99,13 @@ export default {
                 background-color: #F5F4F4 !important;
             }
         }
+    }
+
+    .dist-enter-active, .dist-leave-active {
+        transition: opacity .5s ease-in-out;
+    }
+    
+    .dist-enter, .dist-leave-to {
+        opacity: 0;
     }
 </style>

@@ -1,4 +1,4 @@
-from django.db import connections, models
+from django.db import models
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
@@ -27,46 +27,39 @@ class Collection(models.Model):
     def distribution(self):
         # TODO Add Max Length to every Trait
         "Returns a dictionary mapping key:value pairs to their frequency."
+        if self.property_keys is None:
+            return None
+        def parse_object(key, object):
+            if type(object) is dict:
+                for objectKey, value in object.items():
+                    parse_object(objectKey, value)
+            elif type(object) is list:
+                for element in object:
+                    parse_object(key, element)
+            else:
+                if object:
+                    if key in res:
+                        res[key][object] = res[key].get(object, 0) + 1
+                    else: 
+                        res[key] = {}
+                        res[key][object] = 1               
         res = {}
         assets = self.assets.all()
         for key in self.property_keys:
             for asset in assets:
                 metadata = asset.onchain_metadata
-                # key maps to dictionary
-                if type(metadata[key]) is dict:
-                    for innerKey, value in metadata[key].items():
-                        if innerKey in res:
-                            res[innerKey][value] = res[innerKey].get(value, 0) + 1
-                        else:
-                            res[innerKey] = {}
-                            res[innerKey][value] = 1
-                # key maps to list
-                elif type(metadata[key]) is list:
-                    for value in metadata[key]:
-                        if key in res:
-                            res[key][value] = res[key].get(value, 0) + 1
-                        else:
-                            res[key] = {}
-                            res[key][value] = 1
-                # key maps to value
-                else:
-                    value = metadata[key]
-                    if key in res:
-                        res[key][value] = res[key].get(value, 0) + 1
-                    else:
-                        res[key] = {}
-                        res[key][value] = 1                    
+                if metadata:
+                    parse_object(key, metadata[key])               
         return res
 
 
 class Asset(models.Model):
     name = models.CharField(max_length=32, primary_key=True)
-    num = models.PositiveBigIntegerField()
     policy_id = models.CharField(max_length=56)
     fingerprint = models.CharField(max_length=44, unique=True)
     quantity = models.PositiveBigIntegerField()
     mint_tx_hash = models.CharField(max_length=64)
-    onchain_metadata = models.JSONField()
+    onchain_metadata = models.JSONField(null=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     
     @property
@@ -75,7 +68,7 @@ class Asset(models.Model):
         return bytes_obj.decode('ASCII')
     
     class Meta:
-        ordering = ['num']
+        ordering = ['name']
 
     def __str__(self):
         return self.ascii_name

@@ -58,8 +58,10 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Asset.objects.all()
         policy_id = self.request.query_params.get('policy_id')
-        queryList = self.request.query_params.getlist('query_list[]')
-        print(queryList)
+        query_tags = self.request.query_params.getlist('query_list[]')
+        print(query_tags)
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
+        if query_tags is not None:
+            pass
         return queryset
