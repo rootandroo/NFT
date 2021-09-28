@@ -1,24 +1,24 @@
 <template>
   <div id="wrapper" class="h-100 p-0">
-    <sidebar/>
+    <the-sidebar/>
     <div id="content" class="bg-light-accent">
-      <navbar/>
-      <assets/>
+      <the-navbar/>
+      <the-asset-list/>
     </div>
   </div>
 </template>
 
 <script>
-import navbar from './components/navbar.vue'
-import sidebar from './components/sidebar.vue'
-import assets from './components/assets.vue'
+import TheNavbar from './components/TheNavbar.vue'
+import TheSidebar from './components/TheSidebar.vue'
+import TheAssetList from './components/TheAssetList.vue'
 
 export default {
   name: 'App',
   components: {
-    navbar,
-    sidebar,
-    assets
+    TheNavbar,
+    TheSidebar,
+    TheAssetList,
   },
 }
 </script>

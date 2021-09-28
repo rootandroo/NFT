@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'navbar',
+  name: 'TheNavbar',
   methods: {
       emitToggleSidebar: function () {
           this.$root.$emit('toggle-sidebar')

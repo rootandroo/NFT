@@ -25,6 +25,7 @@ class Collection(models.Model):
     
     @property
     def distribution(self):
+        # TODO Add Max Length to every Trait
         "Returns a dictionary mapping key:value pairs to their frequency."
         res = {}
         assets = self.assets.all()

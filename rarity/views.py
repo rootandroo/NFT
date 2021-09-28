@@ -1,11 +1,6 @@
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db.models import query
-from django.http.response import FileResponse
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from rest_framework import views, viewsets
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
 from .forms import PopulateForm
 from .models import Project, Collection, Asset
 from .services import fetch_all_assets, create_asset_objs
@@ -63,6 +58,8 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Asset.objects.all()
         policy_id = self.request.query_params.get('policy_id')
+        queryList = self.request.query_params.getlist('query_list[]')
+        print(queryList)
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
         return queryset
