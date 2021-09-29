@@ -1,11 +1,13 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db import connections
+from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
 from rest_framework import viewsets
 from .forms import PopulateForm
 from .models import Project, Collection, Asset
 from .services import fetch_all_assets, create_asset_objs
 from .serializers import AssetSerializer, CollectionSerializer, ProjectSerializer
-
+import json
 
 # Views
 def assets(request):
@@ -58,10 +60,9 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Asset.objects.all()
         policy_id = self.request.query_params.get('policy_id')
-        query_tags = self.request.query_params.getlist('query_list[]')
-        print(query_tags)
+        tags = self.request.query_params.get('query_obj')
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
-        if query_tags is not None:
-            pass
+        if tags:
+            queryset = queryset.filter(onchain_metadata__contains=json.loads(tags))
         return queryset

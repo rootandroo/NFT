@@ -9,9 +9,10 @@
             class="pl-4 pb-4 card-group">
                 <b-card
                 v-for="asset in assets" 
-                :key="asset.name"
+                    :key="asset.name"
                 :img-src="fetchImagePath(asset.onchain_metadata.image)"
                 class="mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
+                    {{ asset.onchain_metadata.title }}
                     {{ asset.onchain_metadata.name }} 
                 </b-card>
             </transition-group>
@@ -31,35 +32,57 @@ export default {
     data: function () {
         return {
             assets: null,
-            next: null,   
+            next: false,   
+            queryObj: null,
+            policyID: null,
         }
     },
 
 
     created: function () {
-        this.$root.$on('fetch-assets', (policy_id, queryList=null) => {
-            this.assets = null
-            setTimeout(function () {
-                 this.fetchAssets(policy_id, queryList) }.bind(this), 500)
+        this.$root.$on('queryArrayUpdate', (queryObs) => {
+            var objArray = JSON.parse(JSON.stringify(queryObs))
+            var res = objArray[0]
+            function merge(a,b) {
+                for (const key in b) {
+                    if (key in a) {
+                        Array.isArray(a[key]) ? a[key].push(b[key])
+                        : a[key] = new Array(a[key], b[key])
+                    } else {
+                        a[key] = b[key]
+                    }
+                }
+                return a
+            }
+            var queryObj = objArray.slice(1).reduce(merge, res)
+            this.queryObj = queryObj
+            this.fetchAssets()  
+        })
+        this.$root.$on('policyIDUpdate', (policyID) => {
+            this.policyID = policyID
+            this.queryObj = null
+            this.fetchAssets()
         })
     },
 
 
     beforeDestroy: function () {
-        this.$$root.$off('fetch-assets', (policy_id, queryList=null) => {
-            this.assets = null
-            setTimeout(function () {
-                 this.fetchAssets(policy_id, queryList) }.bind(this), 500)
+        this.$root.$off('queryArrayUpdate', (queryObj) => {
+            this.queryObj = queryObj
+        })
+        this.$root.$off('policyIDUpdate', (policyID) => {
+            this.policyID = policyID
+            this.fetchAssets()
         })
     },
 
 
     methods: {
-        fetchAssets: function(policy_id, queryList=null) {
+        fetchAssets: function() {
             axios
                 .get(URLS.list_asset, { params: {
-                     policy_id: policy_id,
-                     query_list: queryList }}, { headers:headers })
+                     policy_id: this.policyID,
+                     query_obj: this.queryObj }}, { headers:headers })
                 .then(response => {
                     this.next = response.data.next
                     this.assets = response.data.results
@@ -67,9 +90,11 @@ export default {
         },
 
         fetchNextPage: _.throttle(function() {
-            var url = this.next
+            if (!this.next) { return } // no policyID selected
             axios
-                .get(url, {headers:headers})
+                .get(this.next, { params: {
+                     query_obj: this.queryObj
+                }}, {headers:headers})
                 .then(response => {
                     this.assets.push(...response.data.results)
                     this.next = response.data.next

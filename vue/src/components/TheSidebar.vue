@@ -14,7 +14,7 @@
                         <h5 class="text-light">Select Policy</h5>
                         <b-form-select class="bg-light"
                             size="sm"
-                            v-model="policy_id"
+                            v-model="policyID"
                             :options="policies"
                             @change="handlePolicyChange">
                         </b-form-select>
@@ -24,8 +24,7 @@
         </b-row>
         <b-row>
             <the-distribution 
-             :policy_id="policy_id"
-             @queryListFromDist="handleQueryListChange"/>
+             :policyID="policyID"/>
         </b-row>
         <b-row class="mt-auto mb-3"> 
             <b-col>
@@ -52,7 +51,7 @@ export default {
           projects: null,
           project: '',
           policies: null,
-          policy_id: '',
+          policyID: '',
       }
   },
 
@@ -90,14 +89,9 @@ export default {
                     collection => collection.policy_id)
             })
       },
-
       handlePolicyChange: function () {
-          this.$root.$emit('fetch-assets', this.policy_id)
+          this.$root.$emit('policyIDUpdate', this.policyID)
       },
-      
-      handleQueryListChange: function (queryList) {
-          this.$root.$emit('fetch-assets', this.policy_id, queryList)
-      }
   },
 }
 </script>

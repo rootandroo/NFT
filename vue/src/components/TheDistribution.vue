@@ -4,7 +4,8 @@
                     <h5 class="w-100 px-3 text-light">Distribution</h5>
                     <b-form-checkbox-group
                      id="checkbox-wrapper"
-                     v-model="queryList"
+                     v-model="queryArray"
+                     @change="handleQueryUpdate"
                      size="sm"
                      buttons
                      stacked
@@ -16,16 +17,18 @@
                             <!-- Trait List Button -->
                             <b-button class="mb-1 text-dark"
                                 variant="light"
-                                v-b-toggle="trait"
-                                size="sm">{{trait}}
+                                v-b-toggle="removeSpaces(trait)"
+                                size="sm">{{ getLabel(trait) }}
                             </b-button>
-                            <b-collapse :id="trait" class="pr-4">
+                            <b-collapse 
+                             :id="removeSpaces(trait)" 
+                             class="pr-4">
                                 <b-row class="pl-4"
                                 v-for="[option, count] in Object.entries(obj)"
                                 :key="option">
 
                                     <b-form-checkbox class="checkbox border-0 mb-1"
-                                    :value="createQuery(trait, option)" 
+                                    :value="{[trait]:option}"
                                     hidden>
                                         <span class="text-dark">
                                             {{option}}
@@ -52,37 +55,45 @@ const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 export default {
   name: 'TheDistribution',
   props: {
-    policy_id: String
+    policyID: String
   },
   data: function () {
       return {
           distribution: null,
-          queryList: []
+          queryArray: []
+      }
+  },
+  computed: {
+      getLabel: function () {
+          return trait => {
+              var re = /[^_]*$/
+              return re.exec(trait)[0]
+          }
+      },
+      removeSpaces: function () {
+          return string => {
+              return string.replace(/\s+/g, '')
+          }
       }
   },
   watch: {
-    policy_id: function (val) {
+    policyID: function (val) {
         this.distribution = null
-        this.queryList = []
+        this.queryArray = []
         this.setDistribution(val)
     },
-    queryList: function(val) {
-        this.$emit('queryListFromDist', val)
-    }
   },
   methods: {      
-      setDistribution: function (policy_id) {
+      setDistribution: function (policyID) {
           axios
-            .get(URLS.list_collection + policy_id, {headers:headers})
+            .get(URLS.list_collection + policyID, {headers:headers})
             .then(response => {
                 this.distribution = response.data.distribution
             })
       },
-      createQuery: function (trait, option) {
-          let query = {}
-          query[trait] = option
-          return query
-      }
+      handleQueryUpdate: function () {
+        this.$root.$emit('queryArrayUpdate', this.queryArray)
+      },
   },
 }
 </script>

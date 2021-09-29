@@ -4,7 +4,7 @@ from rarity.models import Asset
 from aiolimiter import AsyncLimiter
 
 
-headers = {'project_id': 'WAt3iqJeKl7mwX9mLEesc51Sjvptn114'}
+headers = {'project_id': 'wOVix9BLf1h5tWQ07hQOr9glVdlM8Fsn'}
 
 
 def fetch_all_assets(policy_id):
@@ -80,20 +80,43 @@ def create_asset_objs(asset_list, collection):
             fingerprint=asset['fingerprint'],
             quantity=asset['quantity'],
             mint_tx_hash=asset['initial_mint_tx_hash'], 
-            onchain_metadata=asset['onchain_metadata'],
+            onchain_metadata=flatten_metadata(asset['onchain_metadata']),
             collection=collection))
     return objs
 
 
-def get_num(hex):
-    # hex to str
-    bytes_obj = bytes.fromhex(hex)
-    string = bytes_obj.decode('ASCII')
-    match = re.findall('\d+$', string)
-    return int(match[0])
+def flatten_metadata(metadata):
+    res = {}
+    def flatten(obj, name=''):
+        if type(obj) is dict:
+            for key in obj:
+                flatten(obj[key], name + key + '_')
+        elif type(obj) is list: 
+            res[name[:-1]] = obj
 
+        else:
+            res[name[:-1]] = obj
     
+    flatten(metadata)
+    return res
+
+
 def is_policy_id(policy_id):
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/policy/{policy_id}'
     r = requests.get(url, {'page': 1}, headers=headers)
     return r.status_code != 404
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

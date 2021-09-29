@@ -12,7 +12,7 @@ class Project(models.Model):
 
 
 class Collection(models.Model):
-    # property_keys are keys for accessing asset attributes
+    # property_keys, strings for accessing metadata, strings surrounded by [] map to lists
     policy_id = models.CharField(max_length=56, primary_key=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='collections')
     property_keys = models.JSONField(null=True)
@@ -25,31 +25,28 @@ class Collection(models.Model):
     
     @property
     def distribution(self):
-        # TODO Add Max Length to every Trait
         "Returns a dictionary mapping key:value pairs to their frequency."
         if self.property_keys is None:
             return None
-        def parse_object(key, object):
-            if type(object) is dict:
-                for objectKey, value in object.items():
-                    parse_object(objectKey, value)
-            elif type(object) is list:
+
+        def parse_object(key, object): 
+            if type(object) is list:
                 for element in object:
                     parse_object(key, element)
             else:
-                if object:
-                    if key in res:
-                        res[key][object] = res[key].get(object, 0) + 1
-                    else: 
-                        res[key] = {}
-                        res[key][object] = 1               
+                if key in res:
+                    res[key][object] = res[key].get(object, 0) + 1
+                else: 
+                    res[key] = {}
+                    res[key][object] = 1               
+
         res = {}
         assets = self.assets.all()
         for key in self.property_keys:
             for asset in assets:
                 metadata = asset.onchain_metadata
                 if metadata:
-                    parse_object(key, metadata[key])               
+                    parse_object(key, metadata.get(key))               
         return res
 
 
@@ -72,3 +69,5 @@ class Asset(models.Model):
 
     def __str__(self):
         return self.ascii_name
+
+
