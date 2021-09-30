@@ -2,18 +2,24 @@
     <transition mode="out-in" name="asset-list" appear>
         <div id="asset-wrapper" v-if="assets">
             <transition-group 
-            v-if="assets"
-            :next="next" 
-            tag="div"
-            name="list-append"
-            class="pl-4 pb-4 card-group">
+             :next="next" 
+             tag="div"
+             name="list-append"
+             v-if="assets"
+             class="pl-4 pb-4 card-group">
                 <b-card
-                v-for="asset in assets" 
-                    :key="asset.name"
-                :img-src="fetchImagePath(asset.onchain_metadata.image)"
-                class="mr-4 mt-4 p-2 bg-light rounded text-dark-accent">
-                    {{ asset.onchain_metadata.title }}
-                    {{ asset.onchain_metadata.name }} 
+                 v-for="asset in assets" 
+                 :key="asset.name"
+                 :img-src="fetchImagePath(asset.onchain_metadata.image)"
+                 class="mr-4 mt-4 px-2 pt-2 bg-light rounded text-dark-accent">
+                    {{ getAssetName(asset) }}
+                    <a v-b-modal="asset.name" class="stretched-link"></a>
+                    <asset-modal
+                     :keys="keys"
+                     :asset="asset"
+                     :name="getAssetName(asset)"
+                     :src="fetchImagePath(asset.onchain_metadata.image)"
+                     :distribution="distribution"/>
                 </b-card>
             </transition-group>
             <div id="observe" v-if="assets" :key="next" v-observe-visibility="handleScroll"></div>
@@ -24,10 +30,12 @@
 <script>
 import _ from 'lodash'
 import axios from 'axios'
+import AssetModal from './AssetModal.vue'
 const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
 const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 
 export default {
+  components: { AssetModal },
     name: 'TheAssetList',
 
     data: function () {
@@ -36,7 +44,15 @@ export default {
             next: false,   
             queryObj: null,
             policyID: null,
-            keys: null
+            keys: null,
+            distribution: null,
+        }
+    },
+
+    
+    computed: {
+        getAssetName ()  {
+            return asset => asset.onchain_metadata.title ?? asset.onchain_metadata.name
         }
     },
 
@@ -49,6 +65,10 @@ export default {
 
         this.$root.$on('policyIDFromSidebar', (policyID) => {
             this.handlePolicyUpdate(policyID)
+        })
+
+        this.$root.$on('distObjFromDist', (distObj) => {
+            this.distribution = distObj
         })
     },
 
@@ -67,7 +87,7 @@ export default {
 
 
     methods: {
-        fetchAssets: function() {
+        fetchAssets: function () {
             const params = { policy_id: this.policyID, query_obj: this.queryObj }
             axios
                 .get(URLS.list_asset, { params:params }, { headers:headers })
@@ -76,7 +96,6 @@ export default {
                     this.assets = response.data.results
                 })
         },
-
 
         fetchNextPage: _.throttle(function() {
             if (!this.next) { return } // no policyID selected
@@ -98,10 +117,11 @@ export default {
         },
 
         handlePolicyUpdate: function (policyID) {
-            this.policyID = policyID
-            this.queryObj = null
-            this.setKeys()
             this.assets = null
+            this.queryObj = null
+            this.keys = null
+            this.policyID = policyID
+            this.setKeys()
             setTimeout(function () {
                  this.fetchAssets() }.bind(this), 500)
         },
@@ -158,6 +178,9 @@ export default {
 .card {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	text-align: center;
+    .card-body {
+        padding: 10px;
+    }
 }
 img {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

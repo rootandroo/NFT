@@ -23,6 +23,7 @@ class Collection(models.Model):
     def __str__(self):
         return f'{self.project}: {self.property_keys}'
     
+
     @property
     def distribution(self):
         "Returns a dictionary mapping key:value pairs to their frequency."
@@ -48,6 +49,7 @@ class Collection(models.Model):
                 if metadata:
                     parse_object(key, metadata.get(key))               
         return res
+
 
 
 class Asset(models.Model):

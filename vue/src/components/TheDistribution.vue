@@ -26,7 +26,7 @@
                                 <b-row class="pl-4"
                                 v-for="[option, count] in Object.entries(obj)"
                                 :key="option">
-
+                                    <!-- Trait List Button -->
                                     <b-form-checkbox class="checkbox border-0 mb-1"
                                     :value="{[trait]:option}"
                                     hidden>
@@ -97,6 +97,7 @@ export default {
             .get(URLS.list_collection + policyID, {headers:headers})
             .then(response => {
                 this.distribution = response.data.distribution
+                this.handleDistUpdate()
             })
       },
 
@@ -104,6 +105,10 @@ export default {
       handleQueryUpdate: function () {
         this.$root.$emit('queryObjFromDist', this.queryArray)
       },
+
+      handleDistUpdate: function() {
+          this.$root.$emit('distObjFromDist', this.distribution)
+      }
   },
 }
 </script>
