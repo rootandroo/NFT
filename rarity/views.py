@@ -1,6 +1,4 @@
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db import connections
-from django.db.models.query_utils import Q
 from django.shortcuts import render, redirect
 from rest_framework import viewsets
 from .forms import PopulateForm
@@ -44,6 +42,7 @@ class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
+
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CollectionSerializer
 
@@ -53,6 +52,7 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
         if project is not None:
             queryset = queryset.filter(project=project)
         return queryset
+
 
 class AssetViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AssetSerializer
@@ -64,5 +64,11 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
         if tags:
-            queryset = queryset.filter(onchain_metadata__contains=json.loads(tags))
+            tags = json.loads(tags)
+            for trait, option in tags.items():
+                if not type(option) is list:
+                    if option.isnumeric():
+                        tags[trait] = int(option)
+                        
+            queryset = queryset.filter(onchain_metadata__contains=tags)
         return queryset

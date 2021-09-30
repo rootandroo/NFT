@@ -14,8 +14,7 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         fields = ['policy_id', 'project', 'property_keys', 'distribution']
-        # TODO
-        # Optionally exclude some fields when sending API requests
+
 
 class AssetSerializer(serializers.ModelSerializer):
     onchain_metadata = serializers.JSONField(allow_null=True)

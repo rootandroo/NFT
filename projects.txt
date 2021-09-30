@@ -9,7 +9,3 @@ CryptoDino
 SpaceBudz
 d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc
 ["type", "traits"]
-
-Tiger Society
-545dc1601b5d469508698f7966a3c1c8cf207073041ad84b28d373c1
-["attributes"]

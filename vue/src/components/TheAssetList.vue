@@ -1,5 +1,5 @@
 <template>
-    <transition name="asset-list">
+    <transition mode="out-in" name="asset-list" appear>
         <div id="asset-wrapper" v-if="assets">
             <transition-group 
             v-if="assets"
@@ -29,91 +29,123 @@ const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 
 export default {
     name: 'TheAssetList',
+
     data: function () {
         return {
             assets: null,
             next: false,   
             queryObj: null,
             policyID: null,
+            keys: null
         }
     },
 
 
     created: function () {
-        this.$root.$on('queryArrayUpdate', (queryObs) => {
-            var objArray = JSON.parse(JSON.stringify(queryObs))
-            var res = objArray[0]
-            function merge(a,b) {
-                for (const key in b) {
-                    if (key in a) {
-                        Array.isArray(a[key]) ? a[key].push(b[key])
-                        : a[key] = new Array(a[key], b[key])
-                    } else {
-                        a[key] = b[key]
-                    }
-                }
-                return a
-            }
-            var queryObj = objArray.slice(1).reduce(merge, res)
-            this.queryObj = queryObj
-            this.fetchAssets()  
+        this.$root.$on('queryObjFromDist', (query) => {
+            this.handleQueryUpdate(query)
         })
-        this.$root.$on('policyIDUpdate', (policyID) => {
-            this.policyID = policyID
-            this.queryObj = null
-            this.fetchAssets()
+
+
+        this.$root.$on('policyIDFromSidebar', (policyID) => {
+            this.handlePolicyUpdate(policyID)
         })
     },
 
 
     beforeDestroy: function () {
-        this.$root.$off('queryArrayUpdate', (queryObj) => {
-            this.queryObj = queryObj
+        this.$root.$off('queryObjFromDist', (query) => {
+            this.handleQueryUpdate(query)
         })
-        this.$root.$off('policyIDUpdate', (policyID) => {
+
+
+        this.$root.$off('policyIDFromSidebar', (policyID) => {
             this.policyID = policyID
-            this.fetchAssets()
+            this.handlePolicyUpdate(policyID)
         })
     },
 
 
     methods: {
         fetchAssets: function() {
+            const params = { policy_id: this.policyID, query_obj: this.queryObj }
             axios
-                .get(URLS.list_asset, { params: {
-                     policy_id: this.policyID,
-                     query_obj: this.queryObj }}, { headers:headers })
+                .get(URLS.list_asset, { params:params }, { headers:headers })
                 .then(response => {
                     this.next = response.data.next
                     this.assets = response.data.results
                 })
         },
 
+
         fetchNextPage: _.throttle(function() {
             if (!this.next) { return } // no policyID selected
+            const params = { queryObj: this.queryObj }
             axios
-                .get(this.next, { params: {
-                     query_obj: this.queryObj
-                }}, {headers:headers})
+                .get(this.next, { params: params }, {headers:headers})
                 .then(response => {
                     this.assets.push(...response.data.results)
                     this.next = response.data.next
                 })
         }, 1500),
 
-        fetchImagePath: ipfs => {
-            if (ipfs.includes("/")) {
-                var index = ipfs.lastIndexOf("/")
-                ipfs = ipfs.substr(index + 1)
-            }
-            var url = 'https://ipfs.blockfrost.dev/ipfs/' + ipfs
-            return url
+        handleQueryUpdate: function (query) {
+            const objArray = JSON.parse(JSON.stringify(query))
+            const queryObj = objArray.reduce(this.merge, {})
+            this.queryObj = queryObj
+            setTimeout(function () {
+                 this.fetchAssets() }.bind(this), 500)
         },
 
+        handlePolicyUpdate: function (policyID) {
+            this.policyID = policyID
+            this.queryObj = null
+            this.setKeys()
+            this.assets = null
+            setTimeout(function () {
+                 this.fetchAssets() }.bind(this), 500)
+        },
+
+        setKeys: function () {
+            axios.get(URLS.list_collection + this.policyID, {headers:headers})
+            .then(response => {
+                this.keys = response.data.property_keys
+            })
+        },
+
+        fetchImagePath: ipfs => {
+            if (ipfs.includes("/")) {
+                const index = ipfs.lastIndexOf("/")
+                ipfs = ipfs.substr(index + 1)
+            }
+            return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs
+        },
+
+
         handleScroll: function (isVisible) {
-            if (!isVisible) { return }
-            this.fetchNextPage()
-        }
+            if (isVisible) {
+                this.fetchNextPage()
+            }
+        },
+
+        merge: function (a,b) {
+            for (const key in b) {
+                if (key in a) {
+                    if (Array.isArray(a[key])) {
+                        a[key].push(b[key])
+                    } else {
+                        a[key] = new Array(a[key], b[key])
+                    }
+                } else {
+                    if (this.keys[key]) {
+                        a[key] = new Array(b[key])
+                    } else {
+                        a[key] = b[key]
+                    }
+                }
+            }
+            return a
+        },
     },
 }
 </script>

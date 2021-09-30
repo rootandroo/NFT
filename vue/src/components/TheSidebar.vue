@@ -79,18 +79,18 @@ export default {
             })
       },
 
-      fetchPolicies: function(event) {
+      fetchPolicies: function() {
+          var params = { project: this.project}
           axios
-            .get(URLS.list_collection, 
-                { params: { project: event, fields: 'policy_id'} },
-                { headers:headers })
+            .get(URLS.list_collection, { params:params }, { headers:headers })
             .then(response => {
                 this.policies = response.data.results.map(
-                    collection => collection.policy_id)
+                    collection => collection.policy_id) 
             })
       },
+
       handlePolicyChange: function () {
-          this.$root.$emit('policyIDUpdate', this.policyID)
+          this.$root.$emit('policyIDFromSidebar', this.policyID)
       },
   },
 }

@@ -1,5 +1,5 @@
 <template>
-    <transition v-if="distribution" name="dist" mode="out-in" appear>
+    <transition v-if="distribution" name="list" mode="out-in" appear>
                 <div class="attribute-list-wrapper w-100">
                     <h5 class="w-100 px-3 text-light">Distribution</h5>
                     <b-form-checkbox-group
@@ -63,26 +63,34 @@ export default {
           queryArray: []
       }
   },
+
+  
   computed: {
+      // gets everything following the last underscore
       getLabel: function () {
           return trait => {
               var re = /[^_]*$/
               return re.exec(trait)[0]
           }
       },
+
       removeSpaces: function () {
           return string => {
               return string.replace(/\s+/g, '')
           }
       }
   },
+
+
   watch: {
-    policyID: function (val) {
+    policyID: function (policyID) {
         this.distribution = null
         this.queryArray = []
-        this.setDistribution(val)
+        this.setDistribution(policyID)
     },
   },
+
+
   methods: {      
       setDistribution: function (policyID) {
           axios
@@ -91,8 +99,10 @@ export default {
                 this.distribution = response.data.distribution
             })
       },
+
+
       handleQueryUpdate: function () {
-        this.$root.$emit('queryArrayUpdate', this.queryArray)
+        this.$root.$emit('queryObjFromDist', this.queryArray)
       },
   },
 }
@@ -112,11 +122,11 @@ export default {
         }
     }
 
-    .dist-enter-active, .dist-leave-active {
+    .list-enter-active, .list-leave-active {
         transition: opacity .5s ease-in-out;
     }
     
-    .dist-enter, .dist-leave-to {
+    .list-enter, .list-leave-to {
         opacity: 0;
     }
 </style>
