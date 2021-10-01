@@ -9,5 +9,5 @@
 - [ ] Add Rarity Calculation
 
 - [ ] Flesh Out Populate View
-- [ ] Add Distribution as Collection Field
+- [X] Add Distribution as Collection Field
 - [ ] Dynamically Include and Exclude Fields When Sending Requests
