@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
     twitter = models.URLField(max_length=23, blank=True)
@@ -12,44 +13,49 @@ class Project(models.Model):
 
 
 class Collection(models.Model):
-    # property_keys, strings for accessing metadata, strings surrounded by [] map to lists
     policy_id = models.CharField(max_length=56, primary_key=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='collections')
-    property_keys = models.JSONField(null=True)
+    included_keys = models.JSONField(null=True)
+    distribution = models.JSONField(null=True)
 
     class Meta:
         ordering = ['project']
 
     def __str__(self):
-        return f'{self.project}: {self.property_keys}'
-    
+        return f"{self.project}"
 
-    @property
-    def distribution(self):
-        "Returns a dictionary mapping key:value pairs to their frequency."
-        if self.property_keys is None:
-            return None
+    def save(self, *args, **kwargs):
+        if self.included_keys:
+            # Update distribution
+            keys = self.included_keys
+            assets = self.assets.all()
+            self.distribution = self.fetch_distribution(keys, assets)
+        super().save(*args, **kwargs)
 
-        def parse_object(key, object): 
+
+    def fetch_distribution(keys, assets):
+        def parse_obj(key, object):
             if type(object) is list:
-                for element in object:
-                    parse_object(key, element)
+                for elem in object:
+                    parse_obj(key, elem)
+            elif object:
+                if key in dist:
+                    dist[key][object] = dist[key].get(object, 0) + 1
+                else:
+                    dist[key] = {}
+                    dist[key][object] = 1
             else:
-                if key in res:
-                    res[key][object] = res[key].get(object, 0) + 1
-                else: 
-                    res[key] = {}
-                    res[key][object] = 1               
-
-        res = {}
-        assets = self.assets.all()
-        for key in self.property_keys:
+                if key in dist:
+                    dist[key]['null'] = dist[key].get('null', 0) + 1
+                else:
+                    dist[key] = {}
+                    dist[key]['null'] = 1
+        dist = {}
+        for key in keys:
             for asset in assets:
                 metadata = asset.onchain_metadata
-                if metadata:
-                    parse_object(key, metadata.get(key))               
-        return res
-
+                parse_obj(key, metadata)                    
+        return dist            
 
 
 class Asset(models.Model):
@@ -60,7 +66,8 @@ class Asset(models.Model):
     mint_tx_hash = models.CharField(max_length=64)
     onchain_metadata = models.JSONField(null=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
-    
+    score = models.PositiveIntegerField(null=True)    
+        
     @property
     def ascii_name(self):
         bytes_obj = bytes.fromhex(self.name)
