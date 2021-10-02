@@ -5,8 +5,8 @@
     - [ ] Keep selected tags visible while collasped
     - [X] Fix Null/None trait options
     - [ ] Collapse Automatically on select for traits that do not map to lists
-- [ ] Add Modal for Each Asset
-- [ ] Add Rarity Calculation
+- [X] Add Modal for Each Asset
+- [X] Add Rarity Calculation
 
 - [ ] Flesh Out Populate View
 - [X] Add Distribution as Collection Field
