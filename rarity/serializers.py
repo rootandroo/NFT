@@ -13,13 +13,13 @@ class CollectionSerializer(serializers.ModelSerializer):
     distribution = serializers.JSONField()
     class Meta:
         model = Collection
-        fields = ['policy_id', 'project', 'property_keys', 'distribution']
+        fields = ['policy_id', 'project', 'included_keys', 'distribution']
 
 
 class AssetSerializer(serializers.ModelSerializer):
     onchain_metadata = serializers.JSONField(allow_null=True)
     class Meta:
         model = Asset
-        fields = ['name', 'policy_id', 'fingerprint', 'quantity', 'mint_tx_hash', 'onchain_metadata'] 
+        fields = ['name', 'policy_id', 'fingerprint', 'quantity', 'mint_tx_hash', 'onchain_metadata', 'score'] 
 
 

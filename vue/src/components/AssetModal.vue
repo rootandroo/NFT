@@ -16,7 +16,7 @@
                             <h5 class="text-dark text-center">Rarity Score</h5>
                             <b-badge class="score w-100 text-secondary">
                                 <h6 class="mb-0">
-                                    {{ this.score }}
+                                    {{ asset.score }}
                                 </h6>
                             </b-badge>
                         </div>
@@ -82,13 +82,6 @@ export default {
             type: String
         },
     },
-
-    data: function () {
-        return {
-            score: 0
-        }
-    },
-
     computed: {
         // gets the label of the trait where key = '..._label'
         getLabel: function () {

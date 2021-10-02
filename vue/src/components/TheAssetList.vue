@@ -129,7 +129,7 @@ export default {
         setKeys: function () {
             axios.get(URLS.list_collection + this.policyID, {headers:headers})
             .then(response => {
-                this.keys = response.data.property_keys
+                this.keys = response.data.included_keys
             })
         },
 
