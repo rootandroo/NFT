@@ -105,7 +105,7 @@ export default {
             value = Object.is(value, 'None') ? null : value
             return (this.distribution[key][value])
         },
-    }
+    },
 }
 </script>
 

@@ -133,12 +133,9 @@ export default {
             })
         },
 
-        fetchImagePath: ipfs => {
-            if (ipfs.includes("/")) {
-                const index = ipfs.lastIndexOf("/")
-                ipfs = ipfs.substr(index + 1)
-            }
-            return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs
+        fetchImagePath: function (ipfs) {
+            var ipfs_id = /[^/]*$/.exec(ipfs)[0];
+            return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs_id
         },
 
 

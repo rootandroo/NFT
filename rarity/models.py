@@ -1,8 +1,4 @@
-from os import memfd_create
 from django.db import models
-from django.db.models.base import ModelState
-from django.db.models.fields import SlugField
-
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
@@ -81,20 +77,29 @@ class Asset(models.Model):
     class Meta:
         ordering = ['-score']
 
+
     def __str__(self):
         return self.ascii_name
 
-    def set_score(self, distribution, included_keys, total_count):
-        total = 0
+
+    def set_score(self, distribution, included_keys, total_num):
+        self.score = 0
+        def calc_score(trait, option):
+            num_with_trait = distribution[trait][option]
+            trait_score = 1 / (num_with_trait / total_num)
+            self.score += trait_score
+
+        metadata = self.onchain_metadata
         for key in included_keys:
-            metadata = self.onchain_metadata
-            if key in metadata:
-                value = 'null' if metadata[key] == '' else metadata[key]
-                count = distribution[key][value]
-                trait_score = 1 / (count / total_count)
-                total += trait_score
-        self.score = total
+            value = metadata.get(key, 'null')
+            value = 'null' if value == '' else value
+            if type(value) is list:
+                for elm in value:
+                    calc_score(key, elm)
+            else:
+                calc_score(key, value)    
         self.save()
+
 
     @property
     def ascii_name(self):
