@@ -49,14 +49,18 @@
 
 <script>
 import axios from 'axios'
-const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
-const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 
 export default {
   name: 'TheDistribution',
+
+
   props: {
-    policyID: String
+    policyID: String,
+    headers: Object,
+    urls: Object
   },
+
+
   data: function () {
       return {
           distribution: null,
@@ -94,7 +98,7 @@ export default {
   methods: {      
       setDistribution: function (policyID) {
           axios
-            .get(URLS.list_collection + policyID, {headers:headers})
+            .get(this.urls.list_collection + policyID, {headers:this.headers})
             .then(response => {
                 this.distribution = response.data.distribution
                 this.handleDistUpdate()

@@ -31,13 +31,14 @@
 import _ from 'lodash'
 import axios from 'axios'
 import AssetModal from './AssetModal.vue'
-const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
-const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 
 export default {
   components: { AssetModal },
     name: 'TheAssetList',
-
+    props: {
+        headers: Object,
+        urls: Object
+    },
     data: function () {
         return {
             assets: null,
@@ -90,7 +91,7 @@ export default {
         fetchAssets: function () {
             const params = { policy_id: this.policyID, query_obj: this.queryObj }
             axios
-                .get(URLS.list_asset, { params:params }, { headers:headers })
+                .get(this.urls.list_asset, { params:params }, { headers:this.headers })
                 .then(response => {
                     this.next = response.data.next
                     this.assets = response.data.results
@@ -101,7 +102,7 @@ export default {
             if (!this.next) { return } // no policyID selected
             const params = { queryObj: this.queryObj }
             axios
-                .get(this.next, { params: params }, {headers:headers})
+                .get(this.next, { params: params }, {headers:this.headers})
                 .then(response => {
                     this.assets.push(...response.data.results)
                     this.next = response.data.next
@@ -127,7 +128,7 @@ export default {
         },
 
         setKeys: function () {
-            axios.get(URLS.list_collection + this.policyID, {headers:headers})
+            axios.get(this.urls.list_collection + this.policyID, {headers:this.headers})
             .then(response => {
                 this.keys = response.data.included_keys
             })

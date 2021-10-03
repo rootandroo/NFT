@@ -24,7 +24,9 @@
         </b-row>
         <b-row>
             <the-distribution 
-             :policyID="policyID"/>
+             :urls="urls"
+             :policyID="policyID"
+             :headers="headers"/>
         </b-row>
         <b-row class="mt-auto mb-3"> 
             <b-col>
@@ -58,14 +60,19 @@
 import QRCode from 'qrcode'
 import axios from 'axios'
 import TheDistribution from './TheDistribution.vue'
-const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
-const headers = {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)}
 
 export default {
   name: 'TheSidebar',
+  
   components: {
       TheDistribution
   },
+
+  props: {
+      headers: Object,
+      urls: Object
+  },
+
   data: function () {
       return {
           sidebar: false,
@@ -96,7 +103,7 @@ export default {
   methods: {
       fetchProjects: function() { 
         axios
-            .get(URLS.list_project, { headers: headers })
+            .get(this.urls.list_project, { headers: this.headers })
             .then(response => {
                 this.projects = response.data.results.map(
                     project => project.name)
@@ -106,7 +113,7 @@ export default {
       fetchPolicies: function() {
           var params = { project: this.project}
           axios
-            .get(URLS.list_collection, { params:params }, { headers:headers })
+            .get(this.urls.list_collection, { params:params }, { headers:this.headers })
             .then(response => {
                 this.policies = response.data.results.map(
                     collection => collection.policy_id) 

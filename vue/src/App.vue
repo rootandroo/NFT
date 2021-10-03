@@ -1,9 +1,9 @@
 <template>
   <div id="wrapper" class="h-100 p-0">
-    <the-sidebar/>
+    <the-sidebar :headers="headers" :urls="urls"/>
     <div id="content" class="bg-light-accent">
       <the-navbar/>
-      <the-asset-list/>
+      <the-asset-list :headers="headers"/>
     </div>
   </div>
 </template>
@@ -12,9 +12,17 @@
 import TheNavbar from './components/TheNavbar.vue'
 import TheSidebar from './components/TheSidebar.vue'
 import TheAssetList from './components/TheAssetList.vue'
+const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
+
 
 export default {
   name: 'App',
+  data: function () {
+    return {
+      headers: {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)},
+      urls: URLS
+    }
+  },
   components: {
     TheNavbar,
     TheSidebar,
