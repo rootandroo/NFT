@@ -1,5 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from .forms import PopulateForm
 from .models import Project, Collection, Asset
@@ -37,13 +39,15 @@ def populate(request):
 
 # API Endpoints
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
-    #authentication_classes = [TokenAuthentication]
-    #permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = CollectionSerializer
 
     def get_queryset(self):
@@ -55,6 +59,8 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AssetViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = AssetSerializer
 
     def get_queryset(self):

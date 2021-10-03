@@ -89,9 +89,16 @@ export default {
 
     methods: {
         fetchAssets: function () {
-            const params = { policy_id: this.policyID, query_obj: this.queryObj }
+            var config = { 
+                headers: this.headers,
+                params: {
+                    policy_id: this.policyID, 
+                    query_obj: this.queryObj
+                }
+            }
+            
             axios
-                .get(this.urls.list_asset, { params:params }, { headers:this.headers })
+                .get(this.urls.list_asset, config)
                 .then(response => {
                     this.next = response.data.next
                     this.assets = response.data.results

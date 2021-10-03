@@ -111,9 +111,14 @@ export default {
       },
 
       fetchPolicies: function() {
-          var params = { project: this.project}
+          var config = { 
+              headers: this.headers,
+              params: {
+                project: this.project  
+              }
+          }
           axios
-            .get(this.urls.list_collection, { params:params }, { headers:this.headers })
+            .get(this.urls.list_collection, config)
             .then(response => {
                 this.policies = response.data.results.map(
                     collection => collection.policy_id) 

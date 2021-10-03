@@ -3,7 +3,7 @@
     <the-sidebar :headers="headers" :urls="urls"/>
     <div id="content" class="bg-light-accent">
       <the-navbar/>
-      <the-asset-list :headers="headers"/>
+      <the-asset-list :urls="urls" :headers="headers"/>
     </div>
   </div>
 </template>
@@ -17,10 +17,13 @@ const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
 
 export default {
   name: 'App',
+  mounted() {
+    console.log(`Working on ${process.env.NODE_ENV}`)
+  },
   data: function () {
     return {
       headers: {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)},
-      urls: URLS
+      urls: URLS,
     }
   },
   components: {
