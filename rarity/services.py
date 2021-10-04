@@ -1,16 +1,15 @@
-import asyncio, requests, os, re
+import asyncio, requests, os
 from aiohttp import ClientSession
-from rarity.models import Asset
 from aiolimiter import AsyncLimiter
+from django.core.exceptions import ValidationError
+
+headers = {'project_id': os.getenv('BLOCKFROST_API_KEY')}
 
 
-headers = {'project_id': 'wOVix9BLf1h5tWQ07hQOr9glVdlM8Fsn'}
-
-
-def fetch_all_assets(policy_id):
+def fetch_all_assets(policy_id, num_pages=None):
+    num_pages = num_pages if num_pages else fetch_num_pages(policy_id)
     async def coroutine():
         limiter = AsyncLimiter(500, 10)
-        num_pages = fetch_num_pages(policy_id)
         async with ClientSession(raise_for_status=True) as session:
             tasks = []
             for page in range(1, num_pages + 1):
@@ -71,20 +70,6 @@ def fetch_num_pages(policy_id, low=1, high=None, page=1):
         return fetch_num_pages(policy_id, low, high, (low + high) // 2)
 
 
-def create_asset_objs(asset_list, collection):
-    objs = []
-    for asset in asset_list:
-        objs.append(Asset(
-            name=asset['asset_name'],
-            policy_id=asset['policy_id'],
-            fingerprint=asset['fingerprint'],
-            quantity=asset['quantity'],
-            mint_tx_hash=asset['initial_mint_tx_hash'], 
-            onchain_metadata=flatten_metadata(asset['onchain_metadata']),
-            collection=collection))
-    return objs
-
-
 def flatten_metadata(metadata):
     res = {}
     def flatten(obj, name=''):
@@ -101,10 +86,11 @@ def flatten_metadata(metadata):
     return res
 
 
-def is_policy_id(policy_id):
+def validate_policy_id(policy_id):
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/policy/{policy_id}'
     r = requests.get(url, {'page': 1}, headers=headers)
-    return r.status_code != 404
+    if r.status_code == 404:
+        raise ValidationError(f'Invalid policy_id: {policy_id}')
 
 
 

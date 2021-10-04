@@ -3,38 +3,13 @@ from django.shortcuts import render, redirect
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
-from .forms import PopulateForm
 from .models import Project, Collection, Asset
-from .services import fetch_all_assets, create_asset_objs
 from .serializers import AssetSerializer, CollectionSerializer, ProjectSerializer
 import json
 
 # Views
 def assets(request):
     return render(request, 'assets.html')
-
-
-@staff_member_required
-def populate(request):
-    if request.method == 'POST':
-        form = PopulateForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            project, created = Project.objects.get_or_create(name=data['name'])
-     
-            for policy_id in data['policy_id_list']:
-                asset_list = fetch_all_assets(policy_id)
-
-                collection = Collection.objects.create(policy_id=policy_id, project=project)
-                collection.save()
-                asset_objs = create_asset_objs(asset_list, collection)
-                Asset.objects.bulk_create(asset_objs)
-            
-            return redirect('assets')
-    else:
-        form = PopulateForm()
-    
-    return render(request, 'populate.html', {'form': form})
 
 
 # API Endpoints

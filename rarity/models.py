@@ -1,4 +1,6 @@
 from django.db import models
+from .services import fetch_all_assets, flatten_metadata, validate_policy_id
+
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
@@ -12,9 +14,9 @@ class Project(models.Model):
 
 
 class Collection(models.Model):
-    policy_id = models.CharField(max_length=56, primary_key=True)
+    policy_id = models.CharField(max_length=56, primary_key=True, validators=[validate_policy_id])
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='collections')
-    included_keys = models.JSONField(null=True)
+    included_keys = models.JSONField(null=True, blank=True)
     distribution = models.JSONField(null=True, blank=True)
 
     class Meta:
@@ -24,6 +26,20 @@ class Collection(models.Model):
         return f"{self.project}"
 
     def save(self, *args, **kwargs):
+        # Fetch and Create Assets
+        if not self.assets.all():
+            asset_list = fetch_all_assets(self.policy_id, num_pages=self.num_pages)                
+            for asset in asset_list:
+                asset_obj = Asset(
+                    name=asset['asset_name'],
+                    policy_id=asset['policy_id'],
+                    fingerprint=asset['fingerprint'],
+                    quantity=asset['quantity'],
+                    mint_tx_hash=asset['initial_mint_tx_hash'], 
+                    onchain_metadata=flatten_metadata(asset['onchain_metadata']),
+                    collection=self)
+                asset_obj.save()
+
         if self.included_keys:
             # Update distribution
             keys = self.included_keys
