@@ -17,6 +17,6 @@ module.exports = {
 			scss: {
 				additionalData: [...bootstrapSassAbstractsImports, ''].join(';\n')
 			}
-		}
+		},
 	}
 };

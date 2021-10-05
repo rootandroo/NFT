@@ -17,9 +17,6 @@ const URLS = JSON.parse(document.getElementById('json_data').textContent).urls
 
 export default {
   name: 'App',
-  mounted() {
-    console.log(`Working on ${process.env.NODE_ENV}`)
-  },
   data: function () {
     return {
       headers: {'Authorization':'Token'.concat(' ', process.env.VUE_APP_TOKEN)},

@@ -105,11 +105,10 @@ export default {
                 })
         },
 
-        fetchNextPage: _.throttle(function() {
+        fetchNextPage: _.throttle(function(config) {
             if (!this.next) { return } // no policyID selected
-            const params = { queryObj: this.queryObj }
             axios
-                .get(this.next, { params: params }, {headers:this.headers})
+                .get(this.next, config)
                 .then(response => {
                     this.assets.push(...response.data.results)
                     this.next = response.data.next
@@ -149,7 +148,11 @@ export default {
 
         handleScroll: function (isVisible) {
             if (isVisible) {
-                this.fetchNextPage()
+                var config = {
+                    headers: this.headers, 
+                    params: { queryObj: this.queryObj}
+                }
+                this.fetchNextPage(config)
             }
         },
 
