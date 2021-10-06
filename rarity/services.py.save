@@ -2,9 +2,8 @@ import asyncio, requests, os, json
 from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from django.core.exceptions import ValidationError
-from django.conf import settings
 
-config = settings.CONFIG
+with open('/etc/config
 
 headers = {'project_id': config['BLOCKFROST_API_KEY']}
 
@@ -31,7 +30,7 @@ def fetch_all_assets(policy_id, num_pages=None):
 async def fetch_metadata(asset_hex, session, limiter):
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/{asset_hex}'
     async with limiter:
-        # print(f'Fetching {asset_hex}...')
+        print(f'Fetching {asset_hex}...')
         asset_metadata = await session.get(url, headers=headers)
         assert asset_metadata.status == 200
         return await asset_metadata.json(content_type=None)
@@ -40,7 +39,7 @@ async def fetch_metadata(asset_hex, session, limiter):
 # returns list of assets on page
 async def fetch_assets_on_page(page, session, policy_id, limiter):
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/policy/{policy_id}'
-    # print(f'Fetching assets on page {page}...')
+    print(f'Fetching assets on page {page}...')
     async with limiter:
         page_of_assets = await session.get(url=url, headers=headers, params={'page': page})
         return await page_of_assets.json()

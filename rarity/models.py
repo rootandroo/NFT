@@ -28,7 +28,7 @@ class Collection(models.Model):
     def save(self, *args, **kwargs):
         # Fetch and Create Assets
         if not self.assets.all():
-            asset_list = fetch_all_assets(self.policy_id, num_pages=self.num_pages)                
+            asset_list = fetch_all_assets(self.policy_id)
             for asset in asset_list:
                 asset_obj = Asset(
                     name=asset['asset_name'],
@@ -81,7 +81,7 @@ class Collection(models.Model):
 
 
 class Asset(models.Model):
-    name = models.CharField(max_length=32, primary_key=True)
+    name = models.CharField(max_length=100, primary_key=True)
     policy_id = models.CharField(max_length=56)
     fingerprint = models.CharField(max_length=44, unique=True)
     quantity = models.PositiveBigIntegerField()
