@@ -46,16 +46,15 @@
                 <b-button v-b-modal.donate class="mt-2 text-dark" block>Donate</b-button>
             </b-col>
             <b-modal id="donate" body-bg-variant="dark" size="lg" centered hide-header hide-footer>
-                <h5 class="text-light mr-0 text-center">ADA Donations Support Further Development</h5>
                 <b-card bg-variant="dark-accent">
                     <b-row no-gutters>
                         <b-col md="4">
                             <b-img thumbnail fluid :src="donate" alt="QRCode"></b-img>
                         </b-col>
                         <b-col md="8">
-                            <b-card-body class="text-dark" title="Donations Are Appreciated">
+                            <b-card-body class="text-dark">
                             <b-card-text>
-                                Please do not send ADA from an exchange. Only send ADA from a supported wallet i.e. Daedalus, Yoroi, or Adalite.
+                                I am a student developer based in New York, and recently developed an interest in CNFTs. I created NFT RARITY to easily gauge the rarity and consequent value of NFTs. 
                             </b-card-text>
                                 <span class="mt-2"> 
                                     {{ this.address }}
