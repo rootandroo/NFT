@@ -42,8 +42,11 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = Asset.objects.all()
         policy_id = self.request.query_params.get('policy_id')
         tags = self.request.query_params.get('query_obj')
+        serial = self.request.query_params.get('serial')
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
+        if serial:
+            return queryset.filter(id__icontains=serial)
         if tags:
             tags = json.loads(tags)
             for trait, option in tags.items():

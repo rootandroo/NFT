@@ -48,6 +48,7 @@ export default {
             policyID: null,
             keys: null,
             distribution: null,
+            serial: null
         }
     },
 
@@ -72,6 +73,10 @@ export default {
         this.$root.$on('distObjFromDist', (distObj) => {
             this.distribution = distObj
         })
+
+        this.$root.$on('serialFromSidebar', (serial) => {
+            this.handleSerialQuery(serial)
+        })
     },
 
 
@@ -82,7 +87,6 @@ export default {
 
 
         this.$root.$off('policyIDFromSidebar', (policyID) => {
-            this.policyID = policyID
             this.handlePolicyUpdate(policyID)
         })
     },
@@ -94,7 +98,8 @@ export default {
                 headers: this.headers,
                 params: {
                     policy_id: this.policyID, 
-                    query_obj: this.queryObj
+                    query_obj: this.queryObj,
+                    serial: this.serial
                 }
             }
             
@@ -132,6 +137,12 @@ export default {
             this.setKeys()
             setTimeout(function () {
                  this.fetchAssets() }.bind(this), 500)
+        },
+
+        handleSerialQuery: function (serial) {
+            this.serial = serial
+            setTimeout(function () {
+                this.fetchAssets() }.bind(this), 500)
         },
 
         setKeys: function () {

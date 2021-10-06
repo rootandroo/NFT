@@ -103,7 +103,7 @@ class Asset(models.Model):
 
 
     def __str__(self):
-        return self.id
+        return self.id if self.id else self.name
 
 
     def set_score(self, distribution, included_keys, total_num):

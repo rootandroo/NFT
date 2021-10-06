@@ -12,12 +12,25 @@
                 <transition name="item" appear>
                     <div class="policy-wrapper" v-if="project">
                         <h5 class="text-light">Select Policy</h5>
-                        <b-form-select class="bg-light"
+                        <b-form-select class="bg-light mb-3"
                             size="sm"
                             v-model="policyID"
                             :options="policies"
                             @change="handlePolicyChange">
                         </b-form-select>
+                    </div>
+                </transition>
+                <transition name="item" appear>
+                    <div v-if="policyID">
+                        <h5 class="text-light"></h5>
+                        <b-form-input
+                         id="serial"
+                         size="sm"
+                         v-model="serial"
+                         type="number"
+                         @keyup.enter="emitSerial"
+                         placeholder="Search by Serial">
+                        </b-form-input>
                     </div>
                 </transition>
             </b-form-group>
@@ -80,8 +93,9 @@ export default {
           project: '',
           policies: null,
           policyID: '',
-          address: 'addr1qxufz8nu0s6my5rvqns3xjsupfcua4uw4l5p0jc69hlp8de92xc8xqrc9xlv798vg95y47p2w243e3lwj8vnd8f2rlrsy8fs04',
-          donate: ''
+          donate: null,
+          serial: null,
+          address: 'addr1qxufz8nu0s6my5rvqns3xjsupfcua4uw4l5p0jc69hlp8de92xc8xqrc9xlv798vg95y47p2w243e3lwj8vnd8f2rlrsy8fs04'
       }
   },
 
@@ -134,6 +148,10 @@ export default {
           .then(url => {
               this.donate = url
           })
+      },
+
+      emitSerial : function () {
+          this.$root.$emit('serialFromSidebar', this.serial)
       }
   },
 }
