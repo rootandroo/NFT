@@ -96,7 +96,7 @@ class Asset(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
-    id = models.PositiveBigIntegerField(null=True)
+    id = models.CharField(max_length=100, null=True)
     
     class Meta:
         ordering = ['-score']
