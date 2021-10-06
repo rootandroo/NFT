@@ -28,7 +28,7 @@ class Collection(models.Model):
     def save(self, *args, **kwargs):
         # Fetch and Create Assets
         if not self.assets.all():
-            asset_list = fetch_all_assets(self.policy_id, num_pages=self.num_pages)                
+            asset_list = fetch_all_assets(self.policy_id)                
             for asset in asset_list:
                 asset_obj = Asset(
                     name=asset['asset_name'],
@@ -46,9 +46,15 @@ class Collection(models.Model):
             assets = self.assets.all()
             self.distribution = self.fetch_distribution(keys, assets)
 
-            # Set Asset Score
+            # Set Asset Score and ID
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
+                asset.set_id()
+            
+            # Set Asset Rank
+            for rank, asset_obj in enumerate(Asset.objects.filter(policy_id=self.policy_id)):
+                asset_obj.rank = rank + 1
+                asset_obj.save()           
         super().save(*args, **kwargs)
 
 
@@ -81,7 +87,7 @@ class Collection(models.Model):
 
 
 class Asset(models.Model):
-    name = models.CharField(max_length=32, primary_key=True)
+    name = models.CharField(max_length=100, primary_key=True)
     policy_id = models.CharField(max_length=56)
     fingerprint = models.CharField(max_length=44, unique=True)
     quantity = models.PositiveBigIntegerField()
@@ -89,7 +95,9 @@ class Asset(models.Model):
     onchain_metadata = models.JSONField(null=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
-
+    rank = models.PositiveIntegerField(null=True)
+    id = models.PositiveBigIntegerField(null=True)
+    
     class Meta:
         ordering = ['-score']
 
@@ -105,6 +113,7 @@ class Asset(models.Model):
             trait_score = 1 / (num_with_trait / total_num)
             self.score += trait_score
 
+
         metadata = self.onchain_metadata
         for key in included_keys:
             value = metadata.get(key, 'null')
@@ -117,8 +126,8 @@ class Asset(models.Model):
         self.save()
 
 
-    @property
-    def ascii_name(self):
+    def set_id(self):
         bytes_obj = bytes.fromhex(self.name)
-        return bytes_obj.decode('ASCII')
+        self.id = bytes_obj.decode('ASCII')
+        self.save()
     

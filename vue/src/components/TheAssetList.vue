@@ -10,9 +10,10 @@
                 <b-card
                  v-for="asset in assets" 
                  :key="asset.name"
-                 :img-src="fetchImagePath(asset.onchain_metadata.image)"
-                 class="mr-4 mt-4 px-2 pt-2 bg-light rounded text-dark-accent">
-                    {{ getAssetName(asset) }}
+                 class="mr-4 mt-4 px-1 pb-1 bg-light rounded text-dark-accent">
+                    <h5>{{ '#' + asset.rank }}</h5>
+                    <img class="card-img mb-2" :src="fetchImagePath(asset.onchain_metadata.image)">
+                    <div align="center">{{ getAssetName(asset) }}</div>
                     <a v-b-modal="asset.name" class="stretched-link"></a>
                     <asset-modal
                      :keys="keys"
@@ -100,8 +101,8 @@ export default {
             axios
                 .get(this.urls.list_asset, config)
                 .then(response => {
-                    this.next = response.data.next
                     this.assets = response.data.results
+                    this.next = response.data.next
                 })
         },
 
@@ -185,9 +186,8 @@ export default {
 }
 .card {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	text-align: center;
     .card-body {
-        padding: 10px;
+        padding: 4px;
     }
 }
 img {

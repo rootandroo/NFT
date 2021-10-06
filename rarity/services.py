@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from django.core.exceptions import ValidationError
 
-headers = {'project_id': os.getenv('BLOCKFROST_API_KEY')}
+headers = {'project_id': 'WAt3iqJeKl7mwX9mLEesc51Sjvptn114'}
 
 
 def fetch_all_assets(policy_id, num_pages=None):
