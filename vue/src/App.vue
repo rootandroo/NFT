@@ -1,5 +1,5 @@
 <template>
-  <div id="wrapper" class="h-100 p-0">
+  <div id="wrapper" class="h-100 w-100 p-0">
     <the-sidebar :headers="headers" :urls="urls"/>
     <div id="content" class="bg-light-accent">
       <the-navbar/>
@@ -41,8 +41,10 @@ export default {
 
 #wrapper {
   display: flex;
-  width: 100%;
   align-items: flex-start;
+  @media screen and (max-width: 500px) {
+    overflow-x: scroll
+  }
 }
 
 .b-container {

@@ -46,9 +46,15 @@ class Collection(models.Model):
             assets = self.assets.all()
             self.distribution = self.fetch_distribution(keys, assets)
 
-            # Set Asset Score
+            # Set Asset Score and ID
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
+                asset.set_id()
+            
+            # Set Asset Rank
+            for rank, asset_obj in enumerate(Asset.objects.filter(policy_id=self.policy_id)):
+                asset_obj.rank = rank + 1
+                asset_obj.save()           
         super().save(*args, **kwargs)
 
 
@@ -89,13 +95,15 @@ class Asset(models.Model):
     onchain_metadata = models.JSONField(null=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
-
+    rank = models.PositiveIntegerField(null=True)
+    id = models.PositiveBigIntegerField(null=True)
+    
     class Meta:
         ordering = ['-score']
 
 
     def __str__(self):
-        return self.ascii_name
+        return self.id
 
 
     def set_score(self, distribution, included_keys, total_num):
@@ -104,6 +112,7 @@ class Asset(models.Model):
             num_with_trait = distribution[trait][option]
             trait_score = 1 / (num_with_trait / total_num)
             self.score += trait_score
+
 
         metadata = self.onchain_metadata
         for key in included_keys:
@@ -117,8 +126,8 @@ class Asset(models.Model):
         self.save()
 
 
-    @property
-    def ascii_name(self):
+    def set_id(self):
         bytes_obj = bytes.fromhex(self.name)
-        return bytes_obj.decode('ASCII')
+        self.id = bytes_obj.decode('ASCII')
+        self.save()
     

@@ -18,5 +18,6 @@ module.exports = {
 				additionalData: [...bootstrapSassAbstractsImports, ''].join(';\n')
 			}
 		},
+		extract: true
 	}
 };

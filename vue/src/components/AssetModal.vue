@@ -4,9 +4,10 @@
             <b-row>
                 <b-col class="mb-3" md="7">
                     <b-card
-                        class="px-2 pt-2 text-dark"
-                        :img-src="src">
-                        {{ name }}
+                        class="px-1 pt-1 pb-2 text-dark-accent">
+                        <h5>{{ 'Rarity Rank #' + asset.rank }}</h5>
+                        <img class="card-img mb-3" :src="src">
+                        <h5 align="center">{{ name }}</h5>
                     </b-card>
                 </b-col>
 
@@ -112,14 +113,12 @@ export default {
 <style lang="scss" scoped>
     .card {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	text-align: center;
         .card-body {
-            padding: 10px;
+            padding: 4px;
         }
     }
     .card-img {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        text-align: center;
     }
 
     .rarity {
