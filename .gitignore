@@ -1,6 +1,4 @@
 .DS_Store
-node_modules/
-/dist/
 
 # local env files
 .env.local
@@ -20,7 +18,11 @@ yarn-error.log*
 *.sln
 *.sw*
 
+# vue and django
 node_modules
+static
+assets
+django
 
 db.sqlite3
 

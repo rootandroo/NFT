@@ -50,11 +50,11 @@ class Collection(models.Model):
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
                 asset.set_id()
-            
+
             # Set Asset Rank
-            for rank, asset_obj in enumerate(Asset.objects.filter(policy_id=self.policy_id)):
+            for rank, asset_obj in enumerate(assets.order_by('-score')):
                 asset_obj.rank = rank + 1
-                asset_obj.save()           
+                asset_obj.save()
         super().save(*args, **kwargs)
 
 
@@ -99,7 +99,7 @@ class Asset(models.Model):
     id = models.CharField(max_length=100, null=True)
     
     class Meta:
-        ordering = ['-score']
+        ordering = ['rank']
 
 
     def __str__(self):
@@ -122,7 +122,7 @@ class Asset(models.Model):
                 for elm in value:
                     calc_score(key, elm)
             else:
-                calc_score(key, value)    
+                calc_score(key, value)
         self.save()
 
 
@@ -130,4 +130,3 @@ class Asset(models.Model):
         bytes_obj = bytes.fromhex(self.name)
         self.id = bytes_obj.decode('ASCII')
         self.save()
-    
