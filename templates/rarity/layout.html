@@ -5,8 +5,20 @@
 		<link rel="stylesheet" href="{% static 'src/dist/css/chunk-vendors.css' %}">
 		<link rel="stylesheet" href="{% static 'src/dist/css/app.css' %}">
 		<link rel="icon" href="{% static 'src/dist/favicon.ico' %}">
+                <meta name="description" content="Scalable platform for displaying NFTs Ranked by Rarity">
+		<meta name="keywords" content="nft, rarity, cnft"> 
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<title>NFT RARITY</title>
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-RB8LF3TEQS"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'G-RB8LF3TEQS');
+		</script>
 	</head>
 	<body class='h-100'>
 		{% block content %}		
