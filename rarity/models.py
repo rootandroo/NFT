@@ -70,19 +70,23 @@ class Collection(models.Model):
                     dist[key] = {}
                     dist[key][object] = 1
             else:
+                # Missing either or both of key:value pair
+                asset.onchain_metadata[key] = None
+                asset.save()
+
                 if key in dist:
-                    dist[key]['null'] = dist[key].get('null', 0) + 1
+                    dist[key][None] = dist[key].get(None, 0) + 1
                 else:
                     dist[key] = {}
-                    dist[key]['null'] = 1
+                    dist[key][None] = 1
         dist = {}
         for key in keys:
             for asset in assets:
                 metadata = asset.onchain_metadata
                 if key in metadata:
-                    parse_obj(key, metadata[key])                    
+                    parse_obj(key, metadata[key])
                 else:
-                    parse_obj(key, '')
+                    parse_obj(key, None)
         return dist            
 
 
@@ -116,8 +120,7 @@ class Asset(models.Model):
 
         metadata = self.onchain_metadata
         for key in included_keys:
-            value = metadata.get(key, 'null')
-            value = 'null' if value == '' else value
+            value = metadata.get(key, None)
             if type(value) is list:
                 for elm in value:
                     calc_score(key, elm)

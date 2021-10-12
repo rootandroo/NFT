@@ -51,12 +51,9 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
             tags = json.loads(tags)
             for trait, option in tags.items():
                 if not type(option) is list:
-                   # if option.isnumeric():
-                        # convert numeric str options to integers
-                        # tags[trait] = int(option) 
                     if option == 'null':
                         # filter full null options
-                        filtering = {f'onchain_metadata__{trait}__isnull': True}
+                        filtering = {f'onchain_metadata__{trait}': None}
                         return queryset.filter(**filtering)
             queryset = queryset.filter(onchain_metadata__contains=tags)
         return queryset
