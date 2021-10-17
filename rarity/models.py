@@ -4,6 +4,7 @@ from .services import fetch_all_assets, flatten_metadata, validate_policy_id
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
+    query_name = models.CharField(max_length=64, blank=True)
     twitter = models.URLField(max_length=23, blank=True)
 
     class Meta:
@@ -11,6 +12,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args,  **kwargs):
+        self.query_name = self.name.replace(' ', '')
+        super().save(*args, **kwargs)
 
 
 class Collection(models.Model):

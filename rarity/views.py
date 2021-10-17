@@ -29,7 +29,7 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = Collection.objects.all()
         project = self.request.query_params.get('project')
         if project is not None:
-            queryset = queryset.filter(project=project)
+            queryset = queryset.filter(project__query_name=project)
         return queryset
 
 
