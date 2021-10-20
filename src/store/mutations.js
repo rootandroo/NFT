@@ -8,8 +8,9 @@ export default {
     },
 
     updateAssetList (state, {append, list}) {
+      list.forEach(asset => asset['modal'] = false);
       if (append) {
-        state.assetList.concat(list)
+        state.assetList.push(...list)
       } else {
         state.assetList = list
       }
@@ -17,5 +18,9 @@ export default {
 
     updateDistribution (state, distribution) {
       state.distribution = distribution
-    }
+    },
+
+    updateKeys (state, keys) {
+      state.includedKeys = keys
+    },
 }

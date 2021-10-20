@@ -8,7 +8,8 @@ export default createStore({
     projectList: [],
     policyList: [],
     assetList: [],
-    distribution: null
+    distribution: null,
+    includedKeys: null
   },
 
   mutations,

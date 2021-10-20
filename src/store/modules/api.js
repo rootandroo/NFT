@@ -5,11 +5,23 @@ const state = () => ({
   urls: {},
   headers: {'Authorization':''},
   policyID: null,
-  serial: null
+  serial: null,
+  tags: []
 })
 
 
 const getters = {
+  activeClass: (state, getters) => (trait, option) => {
+    var tag = getters.tagObject(trait, option)
+    var selected = JSON.parse(JSON.stringify(state.tags))
+    var includes = selected.some(e => JSON.stringify(e[trait]) == JSON.stringify(tag[trait]))
+    return includes ? "active" : ''
+  },
+
+  tagObject: (state, getters, rootState) => (trait, option) => {
+    return rootState.includedKeys[trait] ? {[trait]:new Array(option)}
+    : {[trait]:option}
+  }
 }
 
 
@@ -44,22 +56,22 @@ const actions = {
   fetchDistribution({ commit, state }, policyID) {
     const config = { headers: state.headers }
     axios
-      .get(state.urls.list_collection + policyID, config)
+      .get(state.urls.list_collection + policyID + '/', config)
       .then(response => {
-        var distribution = response.data.distribution
-        commit('updateDistribution', distribution, {root:true})
+        commit('updateDistribution', response.data.distribution, {root:true})
+        commit('updateKeys', response.data.included_keys, {root:true})
       })
   },
 
-  async fetchAssets ({ commit, state }, {policyID, url=null, serial=null, tags=null}) {
+  async fetchAssets ({ commit, state }, {policyID=null, url=null, serial=null}) {
     var append = url === null ? false : true 
     url = url || state.urls.list_asset
     const config = {
       headers: state.headers,
       params: {
         policy_id: policyID,          
+        query_obj: JSON.stringify(state.tags),
         serial: serial,
-        query_obj: tags
       }
     }
     const resp = await axios.get(url, config)
@@ -88,6 +100,10 @@ const mutations = {
 
   updateSerial (state, serial) {
     state.serial = serial
+  },
+
+  updateTags (state, tags) {
+    state.tags = tags
   }
 } 
 
