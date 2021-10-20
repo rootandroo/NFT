@@ -166,6 +166,10 @@ LOGGING = {
             "level": "INFO",
             "propagate": True
         },
+        'rarity.views': {
+            "handlers": ["file"],
+            'level': 'INFO',
+        }
     },
     "formatters": {
         "app": {

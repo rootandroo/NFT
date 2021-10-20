@@ -1,16 +1,16 @@
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from .models import Project, Collection, Asset
 from .serializers import AssetSerializer, CollectionSerializer, ProjectSerializer
-import json
+import json, logging
+
+logger = logging.getLogger(__name__)
 
 # Views
 def assets(request):
     return render(request, 'assets.html')
-
 
 # API Endpoints
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,7 +29,7 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = Collection.objects.all()
         project = self.request.query_params.get('project')
         if project is not None:
-            queryset = queryset.filter(project=project)
+            queryset = queryset.filter(project__query_name=project)
         return queryset
 
 
@@ -46,17 +46,16 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
         if serial:
-            return queryset.filter(id__icontains=serial)
+           result = queryset.filter(serial=int(serial.lstrip('0')))
+           if result: return result
         if tags:
             tags = json.loads(tags)
-            for trait, option in tags.items():
-                if not type(option) is list:
-                   # if option.isnumeric():
-                        # convert numeric str options to integers
-                        # tags[trait] = int(option) 
-                    if option == 'null':
-                        # filter full null options
-                        filtering = {f'onchain_metadata__{trait}__isnull': True}
-                        return queryset.filter(**filtering)
-            queryset = queryset.filter(onchain_metadata__contains=tags)
+            for tag in tags:
+                key, value = list(tag.items())[0]
+                value = None if value == 'null' else value
+                if type(value) is list:
+                    queryset = queryset.filter(onchain_metadata__contains=tag)
+                else:
+                    filtering = {f'onchain_metadata__{key}': value}
+                    queryset = queryset.filter(**filtering)
         return queryset

@@ -4,6 +4,7 @@ from .services import fetch_all_assets, flatten_metadata, validate_policy_id
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
+    query_name = models.CharField(max_length=64, blank=True)
     twitter = models.URLField(max_length=23, blank=True)
 
     class Meta:
@@ -11,6 +12,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args,  **kwargs):
+        self.query_name = self.name.replace(' ', '')
+        super().save(*args, **kwargs)
 
 
 class Collection(models.Model):
@@ -70,19 +75,23 @@ class Collection(models.Model):
                     dist[key] = {}
                     dist[key][object] = 1
             else:
+                # Missing either or both of key:value pair
+                asset.onchain_metadata[key] = None
+                asset.save()
+
                 if key in dist:
-                    dist[key]['null'] = dist[key].get('null', 0) + 1
+                    dist[key][None] = dist[key].get(None, 0) + 1
                 else:
                     dist[key] = {}
-                    dist[key]['null'] = 1
+                    dist[key][None] = 1
         dist = {}
         for key in keys:
             for asset in assets:
                 metadata = asset.onchain_metadata
                 if key in metadata:
-                    parse_obj(key, metadata[key])                    
+                    parse_obj(key, metadata[key])
                 else:
-                    parse_obj(key, '')
+                    parse_obj(key, None)
         return dist            
 
 
@@ -97,7 +106,8 @@ class Asset(models.Model):
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
     id = models.CharField(max_length=100, null=True)
-    
+    serial = models.PositiveIntegerField(null=True)
+
     class Meta:
         ordering = ['rank']
 
@@ -116,8 +126,7 @@ class Asset(models.Model):
 
         metadata = self.onchain_metadata
         for key in included_keys:
-            value = metadata.get(key, 'null')
-            value = 'null' if value == '' else value
+            value = metadata.get(key, None)
             if type(value) is list:
                 for elm in value:
                     calc_score(key, elm)

@@ -1,4 +1,4 @@
-import asyncio, requests, os, json
+import asyncio, requests
 from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from django.core.exceptions import ValidationError
@@ -49,7 +49,7 @@ async def fetch_assets_on_page(page, session, policy_id, limiter):
 def fetch_num_pages(policy_id, low=1, high=None, page=1):
     print(f'Determining number of pages...')
     url = f'https://cardano-mainnet.blockfrost.io/api/v0/assets/policy/{policy_id}'
-    
+
     # fetch upperbound
     while high == None:
         r = requests.get(url, headers=headers, params={'page': page})
@@ -78,12 +78,12 @@ def flatten_metadata(metadata):
         if type(obj) is dict:
             for key in obj:
                 flatten(obj[key], name + key + '_')
-        elif type(obj) is list: 
+        elif type(obj) is list:
             res[name[:-1]] = obj
 
         else:
             res[name[:-1]] = obj
-    
+
     flatten(metadata)
     return res
 
@@ -107,4 +107,4 @@ def validate_policy_id(policy_id):
 
 
 
-    
+
