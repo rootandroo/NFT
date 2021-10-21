@@ -1,21 +1,22 @@
 <template>
-  <div class="asset-modal row justify-around q-pa-md  bg-dark">
-    <q-card class="q-px-sm shadow-6 col-7">
-      <span class="text-h6 text-dark">{{ 'Rarity Rank #' + asset.rank }}</span>
-      <q-img 
-        :src="src" 
-        loading="lazy"
-        spinner-color="dark"
-        class="asset-img"
-      />
-      <q-card-section class="asset-name text-dark text-body1">
-        {{ label }}
-      </q-card-section>
-    </q-card>
-
+  <div class="row asset-modal q-pr-md q-pb-md bg-dark">
+    <div class="col-6 col-grow q-pt-md q-pl-md">
+      <q-card class="q-px-sm shadow-6">
+        <span class="text-h6 text-dark">{{ 'Rarity Rank #' + asset.rank }}</span>
+        <q-img 
+          :src="src" 
+          loading="lazy"
+          spinner-color="dark"
+          class="asset-img"
+        />
+        <q-card-section class="asset-name text-dark text-body1">
+          {{ label }}
+        </q-card-section>
+      </q-card>
+    </div>
     <div 
       v-if="includedKeys"
-      class="q-pl-md col-5"
+      class="col-grow q-pt-md q-pl-md" 
     >
       <div class="rounded-borders bg-positive title q-pa-sm">
         <span class="text-h5 text-dark">
@@ -51,7 +52,7 @@
                   :count="distribution[key][option]"
                   :tag-obj="values[key][option]"
                   :active="activeClass(key, option)"
-                />
+                />  
     
                 <!-- Option is Array -->
                 <dist-checkbox 
@@ -117,6 +118,7 @@ export default {
 <style lang="scss" scoped>
 .asset-modal, .q-badge {
   width: 100%;
+  height: 75%;
 }
 
 .title {
@@ -124,7 +126,8 @@ export default {
 }
 
 .wrapper {
-  height: calc(100vh - 470px);
+  height: calc(100% - 100px);
+  min-height: 300px;
 }
 
 .q-item {

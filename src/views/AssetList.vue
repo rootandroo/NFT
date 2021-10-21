@@ -128,6 +128,10 @@ export default {
     height: calc(100vh - 50px);
 }
 
+.q-intersection {
+  min-height: 351px;
+}
+
 .asset-name {
   text-align: center;
 }

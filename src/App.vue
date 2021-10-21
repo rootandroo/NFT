@@ -22,6 +22,8 @@
         <q-btn
           dense
           flat
+          type="a" 
+          href="https://twitter.com/nftrarityis"
         >
           <svg
             fill="white"
