@@ -16,23 +16,16 @@
       >
         <q-list
           class="q-py-sm q-px-md"
-          dense
         >
-          <q-item
+          <dist-checkbox 
             v-for="[option, count] in Object.entries(obj)"
-            :key="option"
-            v-ripple
-            tag="label"
-            :class="[activeClass(trait, option), 'bg-white', 'rounded-borders', 'q-mb-xs']"
-          >
-            <dist-checkbox 
-              :trait="trait"
-              :option="option"
-              :count="count"
-              :tag-obj="tagObject(trait, option)"
-              :active="activeClass(trait, option)"
-            />
-          </q-item>
+            :key="option"            
+            :trait="trait"
+            :option="option"
+            :count="count"
+            :tag-obj="values[trait][option]"
+            :active="activeClass(trait, option)"
+          />
         </q-list>
       </q-expansion-item>
     </q-list>
@@ -56,12 +49,12 @@ export default {
     ]),
 
     ...mapState('api', [
-      'tags'
+      'tags',
+      'values'
     ]),
 
     ...mapGetters('api', [
       'activeClass',
-      'tagObject'
     ]),
 
     getLabel() {

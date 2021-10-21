@@ -82,8 +82,8 @@ export default {
       },
       policyID (newPolicy, oldPolicy) {
           console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
-          this.fetchAssets({policyID: newPolicy}).then(url => {this.nextPage = url})
           this.updateTags([])
+          this.fetchAssets({policyID: newPolicy}).then(url => {this.nextPage = url})
           this.fetchDistribution(newPolicy) 
       }
   },

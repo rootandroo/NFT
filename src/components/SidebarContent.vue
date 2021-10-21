@@ -144,7 +144,7 @@ export default {
             })
         },
 
-        handleSerialUpdate (serial) {
+        handleSerialUpdate () {
           this.fetchAssets({policyID:this.policyID, serial:this.serial})
         }
     }

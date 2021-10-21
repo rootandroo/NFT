@@ -1,18 +1,25 @@
 <template>
-  <q-item-section :class="[active, 'text-dark']">
-    {{ option }}
-  </q-item-section>
-  <q-item-section side>
-    <q-badge :class="[active, 'bg-positive']">
-      {{ count }}
-    </q-badge>
-    <q-checkbox
-      v-model="selectedTags"
-      :val="tag"
-      class="hidden"
-      size="xs"
-    />
-  </q-item-section>
+  <q-item
+    v-ripple
+    tag="label"
+    :class="[active, 'bg-white', 'rounded-borders', 'shadow-3', 'q-mb-xs']"
+    dense
+  >
+    <q-item-section :class="[active, 'text-dark']">
+      {{ option }}
+    </q-item-section>
+    <q-item-section side>
+      <q-badge :class="[active, 'bg-positive']">
+        {{ count }}
+      </q-badge>
+      <q-checkbox
+        v-model="selectedTags"
+        :val="tag"
+        class="hidden"
+        size="xs"
+      />
+    </q-item-section>
+  </q-item>
 </template>
 
 <script>

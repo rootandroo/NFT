@@ -6,21 +6,32 @@ const state = () => ({
   headers: {'Authorization':''},
   policyID: null,
   serial: null,
-  tags: []
+  tags: [],
+  values: {}
 })
 
 
 const getters = {
   activeClass: (state, getters) => (trait, option) => {
-    var tag = getters.tagObject(trait, option)
+    var tag = getters.createTag(trait, option)
     var selected = JSON.parse(JSON.stringify(state.tags))
     var includes = selected.some(e => JSON.stringify(e[trait]) == JSON.stringify(tag[trait]))
     return includes ? "active" : ''
   },
 
-  tagObject: (state, getters, rootState) => (trait, option) => {
-    return rootState.includedKeys[trait] ? {[trait]:new Array(option)}
-    : {[trait]:option}
+  createValues: (state, getters) => (distribution) => {
+    var result = {}
+    for (const [trait, obj] of Object.entries(distribution)) {
+      result[trait] = {}
+      for (const option of Object.keys(obj)) {
+        result[trait][option] = getters.createTag(trait, option)
+      }
+    }
+    return result
+  },
+
+  createTag: (state, getters, rootState) => (trait, option) => {
+    return rootState.includedKeys[trait] ? {[trait]:new Array(option)} : {[trait]:option}
   }
 }
 
@@ -53,13 +64,14 @@ const actions = {
       })
   },
 
-  fetchDistribution({ commit, state }, policyID) {
+  fetchDistribution({ commit, state, getters }, policyID) {
     const config = { headers: state.headers }
     axios
       .get(state.urls.list_collection + policyID + '/', config)
       .then(response => {
         commit('updateDistribution', response.data.distribution, {root:true})
         commit('updateKeys', response.data.included_keys, {root:true})
+        commit('updateValues', getters.createValues(response.data.distribution))
       })
   },
 
@@ -104,6 +116,10 @@ const mutations = {
 
   updateTags (state, tags) {
     state.tags = tags
+  },
+
+  updateValues (state, obj) {
+    state.values = obj
   }
 } 
 

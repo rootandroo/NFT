@@ -40,35 +40,35 @@
           >
             <q-card-section class="q-pa-sm">
               <span class="text-body1">{{ getLabel(key) }}</span>
-              <q-list class="q-ma-xs">
-                <q-item
-                  v-ripple
-                  :class="[activeClass(key, getOption(key)), 'shadow-3', 'rounded-borders']"
-                  tag="label"
-                  dense
-                >
-                  <dist-checkbox 
-                    :trait="key"
-                    :option="getOption(key)"
-                    :count="distribution[key][getOption(key)]"
-                    :tag-obj="tagObject(key, getOption(key))"
-                    :active="activeClass(key, getOption(key))"
-                  />
-                </q-item>
+              <q-list
+                class="q-ma-xs"
+                :set="option = getOption(key)"
+              >
+                <dist-checkbox 
+                  v-if="!Array.isArray(option)"               
+                  :trait="key"
+                  :option="option"
+                  :count="distribution[key][option]"
+                  :tag-obj="values[key][option]"
+                  :active="activeClass(key, option)"
+                />
+    
+                <!-- Option is Array -->
+                <dist-checkbox 
+                  v-for="elm in option"
+                  v-else
+                  :key="elm"
+                  :trait="key"
+                  :option="elm"
+                  :count="distribution[key][elm]"
+                  :tag-obj="values[key][elm]"
+                  :active="activeClass(key, elm)"
+                />
               </q-list>
             </q-card-section>
           </q-card>
         </q-scroll-area>
       </div>
-      <!-- Scroll Area -->
-      <!-- Tags List -->
-      <!-- <div 
-        v-for="key in Object.keys(includedKeys)"
-        :key="key"
-        class="q-pt-xs"
-      >
-        {{ getLabel(key) }}
-      </div> -->
     </div>
   </div>
 </template>
@@ -90,10 +90,13 @@ export default {
       'includedKeys',
       'distribution'
     ]),
+
+    ...mapState('api', [
+      'values'
+    ]),
   
     ...mapGetters('api', [
       'activeClass',
-      'tagObject'
     ]),
 
     getLabel() {
