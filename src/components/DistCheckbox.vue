@@ -10,7 +10,7 @@
     </q-item-section>
     <q-item-section side>
       <q-badge :class="[active, 'bg-positive']">
-        {{ count }}
+        {{ calcPercentage(count) }}
       </q-badge>
       <q-checkbox
         v-model="selectedTags"
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 
 export default {
     // eslint-disable-next-line vue/require-prop-types
@@ -37,9 +37,13 @@ export default {
 
     computed: {
         ...mapState('api', [
-            'tags',
-            'policyID'
+          'tags',
+          'policyID'
         ]),
+
+        ...mapGetters('api', [
+          'calcPercentage'
+        ]), 
 
         selectedTags: {
             get () {

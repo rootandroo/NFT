@@ -119,6 +119,10 @@ export default {
 .asset-modal, .q-badge {
   width: 100%;
   height: 75%;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .title {

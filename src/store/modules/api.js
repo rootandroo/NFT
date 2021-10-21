@@ -7,7 +7,8 @@ const state = () => ({
   policyID: null,
   serial: null,
   tags: [],
-  values: {}
+  values: {},
+  circulation: 0
 })
 
 
@@ -32,6 +33,10 @@ const getters = {
 
   createTag: (state, getters, rootState) => (trait, option) => {
     return rootState.includedKeys[trait] ? {[trait]:new Array(option)} : {[trait]:option}
+  },
+
+  calcPercentage: (state) => (count) => {
+    return ((count/state.circulation) * 100).toFixed(3) + '%'
   }
 }
 
@@ -92,7 +97,7 @@ const actions = {
       append: append
     }
     commit('updateAssetList', payload, {root:true})
-    return (resp.data.next)
+    return ({next:resp.data.next, count:resp.data.count})
   }
 }
 
@@ -120,6 +125,10 @@ const mutations = {
 
   updateValues (state, obj) {
     state.values = obj
+  },
+
+  updateCirculation (state, count) {
+    state.circulation = count
   }
 } 
 

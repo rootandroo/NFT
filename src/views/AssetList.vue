@@ -34,7 +34,7 @@
               />
 
               <q-card-section class="asset-name text-dark">
-                <span class="text-body1">{{ getAssetLabel(asset) }}</span>
+                <span class="text-body2">{{ getAssetLabel(asset) }}</span>
               </q-card-section>
               <q-dialog v-model="asset.modal">
                 <asset-modal-content
@@ -83,7 +83,10 @@ export default {
       policyID (newPolicy, oldPolicy) {
           console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
           this.updateTags([])
-          this.fetchAssets({policyID: newPolicy}).then(url => {this.nextPage = url})
+          this.fetchAssets({policyID: newPolicy}).then(resp => {
+            this.nextPage = resp.next
+            this.updateCirculation(resp.count)
+          })
           this.fetchDistribution(newPolicy) 
       }
   },
@@ -100,7 +103,8 @@ export default {
       ]),
 
       ...mapMutations('api', [
-        'updateTags'
+        'updateTags',
+        'updateCirculation'
       ]),
 
       fetchImagePath: function (ipfs) {
@@ -110,7 +114,7 @@ export default {
 
       onLoad (index, done) {
         if (this.nextPage) {
-          this.fetchAssets({url: this.nextPage}).then(url => {this.nextPage = url})
+          this.fetchAssets({url: this.nextPage}).then(resp => {this.nextPage = resp.next})
         }
         done()
       },
@@ -139,6 +143,7 @@ export default {
 .asset-img {
   border-radius: 4px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  min-height: 263px;
 }
 </style>
 
