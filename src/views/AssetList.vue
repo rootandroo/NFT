@@ -21,29 +21,7 @@
             v-for="asset in assetList"
             :key="asset.name"
           >
-            <q-card 
-              class="q-px-sm shadow-6"
-              @click="asset.modal = true"
-            >
-              <span class="text-h6 text-dark">{{ '#' + asset.rank }}</span>
-              <q-img 
-                :src="fetchImagePath(asset.onchain_metadata.image)" 
-                loading="lazy"
-                spinner-color="dark"
-                class="asset-img"
-              />
-
-              <q-card-section class="asset-name text-dark">
-                <span class="text-body2">{{ getAssetLabel(asset) }}</span>
-              </q-card-section>
-              <q-dialog v-model="asset.modal">
-                <asset-modal-content
-                  :src="fetchImagePath(asset.onchain_metadata.image)"
-                  :asset="asset"
-                  :label="getAssetLabel(asset)"
-                />
-              </q-dialog>
-            </q-card>
+            <asset-card :asset="asset" />
           </q-intersection>
         </div>
       </q-infinite-scroll>
@@ -52,11 +30,13 @@
 </template>
 
 <script>
-import AssetModalContent from '../components/AssetModalContent.vue'
+import AssetCard from '../components/AssetCard.vue'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default {
-  components: { AssetModalContent },
+  components: { 
+    AssetCard
+  },
   
   data () {
       return {
@@ -71,9 +51,6 @@ export default {
       ...mapState([
           'assetList'
       ]),
-      getAssetLabel ()  {
-          return asset => asset.onchain_metadata.title ?? asset.onchain_metadata.name
-      }
   },
 
   watch: {
@@ -107,11 +84,6 @@ export default {
         'updateCirculation'
       ]),
 
-      fetchImagePath: function (ipfs) {
-          var ipfs_id = /[^/]*$/.exec(ipfs)[0];
-          return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs_id
-      },
-
       onLoad (index, done) {
         if (this.nextPage) {
           this.fetchAssets({url: this.nextPage}).then(resp => {this.nextPage = resp.next})
@@ -134,16 +106,6 @@ export default {
 
 .q-intersection {
   min-height: 351px;
-}
-
-.asset-name {
-  text-align: center;
-}
-
-.asset-img {
-  border-radius: 4px !important;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
-  min-height: 263px;
 }
 </style>
 

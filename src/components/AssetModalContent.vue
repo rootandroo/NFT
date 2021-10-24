@@ -43,20 +43,19 @@
               <span class="text-body1">{{ getLabel(key) }}</span>
               <q-list
                 class="q-ma-xs"
-                :set="option = getOption(key)"
               >
                 <dist-checkbox 
-                  v-if="!Array.isArray(option)"               
+                  v-if="!Array.isArray(getOption(key))"               
                   :trait="key"
-                  :option="option"
-                  :count="distribution[key][option]"
-                  :tag-obj="values[key][option]"
-                  :active="activeClass(key, option)"
+                  :option="getOption(key)"
+                  :count="distribution[key][getOption(key)]"
+                  :tag-obj="values[key][getOption(key)]"
+                  :active="activeClass(key, getOption(key))"
                 />  
     
                 <!-- Option is Array -->
                 <dist-checkbox 
-                  v-for="elm in option"
+                  v-for="elm in getOption(key)"
                   v-else
                   :key="elm"
                   :trait="key"
