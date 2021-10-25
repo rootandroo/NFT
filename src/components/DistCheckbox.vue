@@ -2,14 +2,14 @@
   <q-item
     v-ripple
     tag="label"
-    :class="[active, 'bg-white', 'rounded-borders', 'shadow-3', 'q-mb-xs']"
+    :class="[activeClass, 'bg-white', 'rounded-borders', 'shadow-3', 'q-mb-xs']"
     dense
   >
-    <q-item-section :class="[active, 'text-dark']">
+    <q-item-section :class="[activeClass, 'text-dark']">
       {{ option }}
     </q-item-section>
     <q-item-section side>
-      <q-badge :class="[active, 'bg-positive']">
+      <q-badge :class="[activeClass, 'bg-positive']">
         {{ calcPercentage(count) }}
       </q-badge>
       <q-checkbox
@@ -27,7 +27,7 @@ import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 
 export default {
     // eslint-disable-next-line vue/require-prop-types
-    props: ['trait', 'option', 'count', 'tagObj', 'active'],
+    props: ['trait', 'option', 'count', 'tagObj', 'isActive'],
      
     data () {
       return {
@@ -54,6 +54,10 @@ export default {
                 this.fetchAssets({policyID:this.policyID})
             }
         },
+
+        activeClass () {
+          return this.isActive ? 'active' : ''
+        }
     },
 
     created () {

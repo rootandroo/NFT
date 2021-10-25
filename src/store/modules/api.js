@@ -13,11 +13,15 @@ const state = () => ({
 
 
 const getters = {
-  activeClass: (state, getters) => (trait, option) => {
+  isActive: (state, getters) => (trait, option) => {
     var tag = getters.createTag(trait, option)
-    var selected = JSON.parse(JSON.stringify(state.tags))
-    var includes = selected.some(e => JSON.stringify(e[trait]) == JSON.stringify(tag[trait]))
-    return includes ? "active" : ''
+    var tags = JSON.parse(JSON.stringify(state.tags))
+    return tags.some(e => JSON.stringify(e[trait]) == JSON.stringify(tag[trait]))
+  },
+
+  isTraitSelected: (state, getters) => (trait) => {
+    var values = JSON.parse(JSON.stringify(Object.values(state.values[trait])))
+    return values.some(e => getters.isActive(trait, e[trait]))
   },
 
   createValues: (state, getters) => (distribution) => {

@@ -6,9 +6,16 @@
         <q-img 
           :src="src" 
           loading="lazy"
-          spinner-color="dark"
+          no-spinner
           class="asset-img"
-        />
+        >
+          <template #loading>
+            <q-skeleton
+              class="fit"
+              square
+            />
+          </template>
+        </q-img>
         <q-card-section class="asset-name text-dark text-body1">
           {{ label }}
         </q-card-section>
@@ -45,12 +52,12 @@
                 class="q-ma-xs"
               >
                 <dist-checkbox 
-                  v-if="!Array.isArray(getOption(key))"               
+                  v-if="!includedKeys[key]"               
                   :trait="key"
                   :option="getOption(key)"
                   :count="distribution[key][getOption(key)]"
                   :tag-obj="values[key][getOption(key)]"
-                  :active="activeClass(key, getOption(key))"
+                  :is-active="isActive(key, getOption(key))"
                 />  
     
                 <!-- Option is Array -->
@@ -62,7 +69,7 @@
                   :option="elm"
                   :count="distribution[key][elm]"
                   :tag-obj="values[key][elm]"
-                  :active="activeClass(key, elm)"
+                  :is-active="isActive(key, elm)"
                 />
               </q-list>
             </q-card-section>
@@ -96,7 +103,7 @@ export default {
     ]),
   
     ...mapGetters('api', [
-      'activeClass',
+      'isActive',
     ]),
 
     getLabel() {

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import AssetList from '../views/AssetList.vue'
 
+const AssetList = () => import('../views/AssetList.vue')
 const About = () => import('../views/About.vue')
 
 const routes = [

@@ -23,7 +23,7 @@
     >
       <template #loading>
         <q-skeleton
-          class="asset-img"
+          class="fit"
           square
         />
       </template>
@@ -43,7 +43,7 @@
 
 <script>
 import AssetModalContent from '../components/AssetModalContent.vue'
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
 
@@ -71,9 +71,9 @@ export default {
           return asset => asset.onchain_metadata.title ?? asset.onchain_metadata.name
       },
 
-      formatToAda () {
-        return lovelace => lovelace / 1_000_000 + " ADA"
-      }
+      // formatToAda () {
+      //   return lovelace => lovelace / 1_000_000 + " ADA"
+      // }
   },
 
   // created () {
@@ -86,19 +86,19 @@ export default {
           return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs_id
       },
 
-      fetchAssetMarketInfo (name) {
-          const params = new URLSearchParams()
-          params.append("search", name);
-          params.append("sort", "date");
-          params.append("order", "desc");
-          params.append("page", 1);
-          axios
-            .post('https://api.cnft.io/market/listings', params)
-            .then(resp => {
-                this.price = resp.data.assets[0]?.price
-                this.id = resp.data.assets[0]?.id
-            })
-      }
+      // fetchAssetMarketInfo (name) {
+      //     const params = new URLSearchParams()
+      //     params.append("search", name);
+      //     params.append("sort", "date");
+      //     params.append("order", "desc");
+      //     params.append("page", 1);
+      //     axios
+      //       .post('https://api.cnft.io/market/listings', params)
+      //       .then(resp => {
+      //           this.price = resp.data.assets[0]?.price
+      //           this.id = resp.data.assets[0]?.id
+      //       })
+      // }
   }
 }
 </script>
@@ -112,6 +112,5 @@ export default {
   border-radius: 4px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
   min-height: 263px;
-  min-width: 263px;
 }
 </style>

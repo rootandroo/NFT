@@ -17,15 +17,33 @@
         <q-list
           class="q-py-sm q-px-md"
         >
-          <dist-checkbox 
+          <div 
+            v-if="includedKeys[trait] || !isTraitSelected(trait)"
+          >
+            <dist-checkbox 
+              v-for="[option, count] in Object.entries(obj)"
+              :key="option"            
+              :trait="trait"
+              :option="option"
+              :count="count"
+              :tag-obj="values[trait][option]"
+              :is-active="isActive(trait, option)"
+            />
+          </div>
+          <div 
             v-for="[option, count] in Object.entries(obj)"
-            :key="option"            
-            :trait="trait"
-            :option="option"
-            :count="count"
-            :tag-obj="values[trait][option]"
-            :active="activeClass(trait, option)"
-          />
+            v-else
+            :key="option"
+          >
+            <dist-checkbox
+              v-if="isActive(trait, option)"
+              :trait="trait"
+              :option="option"
+              :count="count"
+              :tag-obj="values[trait][option]"
+              :is-active="true"
+            />
+          </div>
         </q-list>
       </q-expansion-item>
     </q-list>
@@ -54,7 +72,8 @@ export default {
     ]),
 
     ...mapGetters('api', [
-      'activeClass',
+      'isActive',
+      'isTraitSelected'
     ]),
 
     getLabel() {
