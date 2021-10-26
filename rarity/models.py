@@ -108,7 +108,8 @@ class Asset(models.Model):
     rank = models.PositiveIntegerField(null=True)
     alpha_name = models.CharField(max_length=100, null=True)
     serial = models.PositiveIntegerField(null=True)
-
+    market = models.JSONField(null=True)
+     
     class Meta:
         ordering = ['rank']
 
