@@ -14,7 +14,7 @@
         @load="onLoad"
       >
         <div
-          class="card-group q-pa-lg q-gutter-lg"
+          class="card-group q-pa-lg q-gutter-md"
           :v-if="assetList"
         >
           <q-intersection
@@ -97,7 +97,7 @@ export default {
 <style>
 .card-group {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(12rem, auto));
 }
 
 .q-scrollarea {
@@ -105,7 +105,7 @@ export default {
 }
 
 .q-intersection {
-  min-height: 351px;
+  min-height: 182px;
 }
 </style>
 

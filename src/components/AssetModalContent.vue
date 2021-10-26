@@ -16,7 +16,7 @@
             />
           </template>
         </q-img>
-        <q-card-section class="asset-name text-dark text-body1">
+        <q-card-section class="title text-dark text-body1">
           {{ label }}
         </q-card-section>
       </q-card>

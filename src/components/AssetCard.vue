@@ -3,7 +3,7 @@
     class="q-px-sm shadow-6"
     @click="modal = true"
   >
-    <div class="text-h6 text-dark">
+    <div class="text-body1 text-weight-bold text-dark">
       {{ '#' + asset.rank }}
       <!-- <span
         v-if="price"
@@ -111,6 +111,6 @@ export default {
 .asset-img {
   border-radius: 4px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
-  min-height: 263px;
+  min-height: 182px;
 }
 </style>
