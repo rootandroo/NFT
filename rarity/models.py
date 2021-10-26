@@ -1,6 +1,6 @@
 from django.db import models
 from .services import fetch_all_assets, flatten_metadata, validate_policy_id
-
+import re
 
 class Project(models.Model):
     name = models.CharField(max_length=64, primary_key=True)
@@ -51,10 +51,11 @@ class Collection(models.Model):
             assets = self.assets.all()
             self.distribution = self.fetch_distribution(keys, assets)
 
-            # Set Asset Score and ID
+            # Set Asset Score, Alphabetical Name, and Serial
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
-                asset.set_id()
+                asset.set_alpha_name()
+                asset.set_serial()
 
             # Set Asset Rank
             for rank, asset_obj in enumerate(assets.order_by('-score')):
@@ -105,7 +106,7 @@ class Asset(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
-    id = models.CharField(max_length=100, null=True)
+    alpha_name = models.CharField(max_length=100, null=True)
     serial = models.PositiveIntegerField(null=True)
 
     class Meta:
@@ -113,7 +114,7 @@ class Asset(models.Model):
 
 
     def __str__(self):
-        return self.id if self.id else self.name
+        return f'#{self.serial} {self.alpha_name}'
 
 
     def set_score(self, distribution, included_keys, total_num):
@@ -135,7 +136,15 @@ class Asset(models.Model):
         self.save()
 
 
-    def set_id(self):
+    def set_alpha_name(self):
         bytes_obj = bytes.fromhex(self.name)
-        self.id = bytes_obj.decode('ASCII')
+        ascii = bytes_obj.decode('ASCII')
+        self.alpha_name = ''.join(re.findall(r'[a-zA-Z]+', ascii))
+        self.save()        
+
+    def set_serial(self):
+        bytes_obj = bytes.fromhex(self.name)
+        ascii = bytes_obj.decode('ASCII')
+        result = re.findall(r'\d+', ascii)
+        if result: self.serial = result[-1]
         self.save()
