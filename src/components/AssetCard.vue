@@ -28,8 +28,8 @@
         />
       </template>
     </q-img>
-    <q-card-section class="asset-name text-dark">
-      <span class="text-body2">{{ getAssetLabel(asset) }}</span>
+    <q-card-section class="asset-name text-dark ellipsis">
+      <span class="text-body2  text-weight-medium">{{ getAssetLabel(asset) }}</span>
     </q-card-section>
     <q-dialog v-model="modal">
       <asset-modal-content
@@ -68,7 +68,7 @@ export default {
 
   computed: {
       getAssetLabel ()  {
-          return asset => asset.onchain_metadata.title ?? asset.onchain_metadata.name
+          return asset => `#${asset.serial} ${asset.alpha_name}`
       },
 
       // formatToAda () {
@@ -85,20 +85,6 @@ export default {
           var ipfs_id = /[^/]*$/.exec(ipfs)[0];
           return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs_id
       },
-
-      // fetchAssetMarketInfo (name) {
-      //     const params = new URLSearchParams()
-      //     params.append("search", name);
-      //     params.append("sort", "date");
-      //     params.append("order", "desc");
-      //     params.append("page", 1);
-      //     axios
-      //       .post('https://api.cnft.io/market/listings', params)
-      //       .then(resp => {
-      //           this.price = resp.data.assets[0]?.price
-      //           this.id = resp.data.assets[0]?.id
-      //       })
-      // }
   }
 }
 </script>

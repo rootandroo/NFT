@@ -105,7 +105,7 @@ export default {
 }
 
 .q-intersection {
-  min-height: 182px;
+  min-height: 258px;
 }
 </style>
 

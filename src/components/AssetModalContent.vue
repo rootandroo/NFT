@@ -2,7 +2,7 @@
   <div class="row asset-modal q-pr-md q-pb-md bg-dark">
     <div class="col-6 col-grow q-pt-md q-pl-md">
       <q-card class="q-px-sm shadow-6">
-        <span class="text-h6 text-dark">{{ 'Rarity Rank #' + asset.rank }}</span>
+        <span class="text-h6 text-weight-bold text-dark">{{ 'Rarity Rank #' + asset.rank }}</span>
         <q-img 
           :src="src" 
           loading="lazy"
@@ -16,7 +16,7 @@
             />
           </template>
         </q-img>
-        <q-card-section class="title text-dark text-body1">
+        <q-card-section class="title text-body2 text-dark text-weight-bold ellipsis">
           {{ label }}
         </q-card-section>
       </q-card>
@@ -26,7 +26,7 @@
       class="col-grow q-pt-md q-pl-md" 
     >
       <div class="rounded-borders bg-positive title q-pa-sm">
-        <span class="text-h5 text-dark">
+        <span class="text-h5 text-dark text-weight-bold">
           Rarity Score
         </span>
         <q-badge
