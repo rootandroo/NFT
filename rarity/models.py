@@ -55,6 +55,7 @@ class Collection(models.Model):
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
                 asset.set_alpha_name()
+                asset.set_decoded_name()
                 asset.set_serial()
 
             # Set Asset Rank
@@ -106,6 +107,7 @@ class Asset(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
+    decoded_name = models.CharField(max_length=100, null=True)
     alpha_name = models.CharField(max_length=100, null=True)
     serial = models.PositiveIntegerField(null=True)
     market = models.JSONField(null=True)
@@ -116,7 +118,6 @@ class Asset(models.Model):
 
     def __str__(self):
         return f'#{self.serial} {self.alpha_name}'
-
 
     def set_score(self, distribution, included_keys, total_num):
         self.score = 0
@@ -136,16 +137,17 @@ class Asset(models.Model):
                 calc_score(key, value)
         self.save()
 
-
     def set_alpha_name(self):
-        bytes_obj = bytes.fromhex(self.name)
-        ascii = bytes_obj.decode('ASCII')
-        self.alpha_name = ''.join(re.findall(r'[a-zA-Z]+', ascii))
+        title = self.onchain_metadata.get('name', self.onchain_metadata.get('title'))
+        self.alpha_name = ''.join(re.findall(r'[a-zA-Z_ ]+', title))
         self.save()        
 
-    def set_serial(self):
+    def set_decoded_name(self):
         bytes_obj = bytes.fromhex(self.name)
-        ascii = bytes_obj.decode('ASCII')
-        result = re.findall(r'\d+', ascii)
+        self.decoded_name = bytes_obj.decode('ASCII')
+        self.save()
+        
+    def set_serial(self):
+        result = re.findall(r'\d+', self.decoded_name)
         if result: self.serial = result[-1]
         self.save()
