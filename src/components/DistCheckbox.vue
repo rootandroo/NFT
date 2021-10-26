@@ -77,11 +77,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~quasar-variables-styl';
 .active {
     color: white !important;
 }
 .q-badge.active {
-    color: #8D4D72 !important;
+    color: $dark !important;
     background-color: #F5F4F4 !important;
 }
 </style>

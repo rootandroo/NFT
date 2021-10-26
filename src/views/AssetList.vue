@@ -97,7 +97,7 @@ export default {
 <style>
 .card-group {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(12rem, auto));
+	grid-template-columns: repeat(auto-fill, minmax(13rem, auto));
 }
 
 .q-scrollarea {
@@ -105,7 +105,7 @@ export default {
 }
 
 .q-intersection {
-  min-height: 258px;
+  min-height: 285px;
 }
 </style>
 
