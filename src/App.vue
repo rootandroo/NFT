@@ -5,7 +5,7 @@
   >
     <!-- Navbar -->
     <q-header 
-      class="bg-primary text-white"
+      class="bg-black text-white"
       height-hint="50"
     >
       <q-toolbar>
@@ -17,10 +17,13 @@
           @click="toggleSidebar"
         />
         <q-toolbar-title>
-          <q-img
+          <!-- <q-img
             id="logo"
             src="./assets/logo.png"
-          />
+          /> -->
+          <h6 class="q-ma-none">
+            NFT RARITY
+          </h6>
         </q-toolbar-title>
 
         <links />
