@@ -6,8 +6,9 @@ const state = () => ({
   headers: {'Authorization':''},
   policyID: null,
   serial: null,
+  nextURL: null,
   tags: [],
-  values: {},
+  values: {}, // storing Tag Objects for refrence
   circulation: 0
 })
 
@@ -95,13 +96,17 @@ const actions = {
         serial: serial,
       }
     }
-    const resp = await axios.get(url, config)
-    var payload = {
-      list: resp.data.results,
-      append: append
+    try {
+      const resp = await axios.get(url, config)
+
+      var payload = { list: resp.data.results, append: append }
+      commit('updateAssetList', payload, {root:true})
+      commit('updateNextURL', resp.data.next)
+      return {found:resp.data.count}
+    } catch (error) {
+      commit('updateNextURL', null)
+      return {found: 0}
     }
-    commit('updateAssetList', payload, {root:true})
-    return ({next:resp.data.next, count:resp.data.count})
   }
 }
 
@@ -131,6 +136,10 @@ const mutations = {
     state.values = obj
   },
 
+  updateNextURL (state, url) {
+    state.nextURL = url
+  },
+  
   updateCirculation (state, count) {
     state.circulation = count
   }

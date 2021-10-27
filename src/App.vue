@@ -5,7 +5,7 @@
   >
     <!-- Navbar -->
     <q-header 
-      class="bg-black text-white"
+      class="bg-primary text-white"
       height-hint="50"
     >
       <q-toolbar>

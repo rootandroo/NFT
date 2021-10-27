@@ -1,7 +1,8 @@
 <template>
   <q-item-section>
     <q-item-label class="text-white text-h6">
-      Distribution
+      Distribution 
+      <span class="float-right text-caption">{{ circulation }} Assets</span>
     </q-item-label>
     <q-list
       dark
@@ -68,7 +69,8 @@ export default {
 
     ...mapState('api', [
       'tags',
-      'values'
+      'values',
+      'circulation'
     ]),
 
     ...mapGetters('api', [

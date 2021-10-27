@@ -1,6 +1,7 @@
 <template>
   <q-page v-if="policyID">
     <q-scroll-area
+      ref="scrollArea"
       :thumb-style="{
         background:'white',
         opacity: 1,
@@ -10,7 +11,6 @@
       <q-infinite-scroll 
         :offset="250"
         :debounce="700"
-        transition="fade"
         @load="onLoad"
       >
         <div
@@ -46,8 +46,10 @@ export default {
 
   computed: {
       ...mapState('api', [
-          'policyID'
+          'policyID',
+          'nextURL'
       ]),
+
       ...mapState([
           'assetList'
       ]),
@@ -59,10 +61,10 @@ export default {
       },
       policyID (newPolicy, oldPolicy) {
           console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
-          this.updateTags([])
+          this.updateTags([]) // Clear Selected Tags
+          this.resetScrollArea()
           this.fetchAssets({policyID: newPolicy}).then(resp => {
-            this.nextPage = resp.next
-            this.updateCirculation(resp.count)
+            this.updateCirculation(resp.found)
           })
           this.fetchDistribution(newPolicy) 
       }
@@ -85,11 +87,17 @@ export default {
       ]),
 
       onLoad (index, done) {
-        if (this.nextPage) {
-          this.fetchAssets({url: this.nextPage}).then(resp => {this.nextPage = resp.next})
+        if (this.nextURL) {
+          this.fetchAssets({url: this.nextURL})
         }
         done()
       },
+
+      resetScrollArea () {
+        if (this.$refs.scrollArea) {
+          this.$refs.scrollArea.setScrollPosition('vertical', 0) 
+        }
+      }
   }    
 }
 </script>
@@ -97,7 +105,7 @@ export default {
 <style>
 .card-group {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(13rem, auto));
+	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
 }
 
 .q-scrollarea {

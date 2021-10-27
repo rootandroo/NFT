@@ -82,8 +82,8 @@ export default {
 
   methods: {
       fetchImagePath (ipfs) {
-          var ipfs_id = /[^/]*$/.exec(ipfs)[0];
-          return 'https://ipfs.blockfrost.dev/ipfs/' + ipfs_id
+        var ipfs_id = /Qm[1-9A-Za-z]{44}.*/.exec(ipfs)?.[0]
+        return 'https://ipfs.blockfrost.dev/ipfs/' +  ipfs_id 
       },
   }
 }

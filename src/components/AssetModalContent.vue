@@ -7,7 +7,6 @@
           :src="src" 
           loading="lazy"
           no-spinner
-          class="asset-img"
         >
           <template #loading>
             <q-skeleton
@@ -122,13 +121,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.asset-modal, .q-badge {
+.asset-modal {
   width: 100%;
-  height: 75%;
+  height: 90%;
+  max-width: 700px;
   overflow: auto;
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.q-badge {
+  width: 100%;
 }
 
 .title {
