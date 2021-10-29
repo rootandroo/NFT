@@ -1,3 +1,4 @@
+from django.db.models.query_utils import Q
 from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -43,11 +44,21 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
         policy_id = self.request.query_params.get('policy_id')
         tags = self.request.query_params.get('query_obj')
         serial = self.request.query_params.get('serial')
+        rank_filter = self.request.query_params.get('rank_filter')
+
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
+
         if serial:
            result = queryset.filter(serial=int(serial.lstrip('0')))
            if result: return result
+
+        if rank_filter:
+            rank_filter = json.loads(rank_filter)
+            min, max = (rank_filter["min"], rank_filter["max"])
+            if min: queryset = queryset.filter(rank__gte=min)
+            if max: queryset = queryset.filter(rank__lte=max)
+            
         if tags:
             tags = json.loads(tags)
             for tag in tags:

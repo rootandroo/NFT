@@ -29,7 +29,7 @@ class Collection(models.Model):
 
     def __str__(self):
         return f"{self.project}"
-
+    
     def save(self, *args, **kwargs):
         # Fetch and Create Assets
         if not self.assets.all():
