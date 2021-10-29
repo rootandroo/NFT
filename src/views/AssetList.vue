@@ -20,6 +20,7 @@
           <q-intersection
             v-for="asset in assetList"
             :key="asset.name"
+            transition="fade"
           >
             <asset-card :asset="asset" />
           </q-intersection>
@@ -63,10 +64,10 @@ export default {
           console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
           this.updateTags([]) // Clear Selected Tags
           this.resetScrollArea()
-          this.fetchAssets({policyID: newPolicy}).then(resp => {
+          this.fetchAssets().then(resp => {
             this.updateCirculation(resp.found)
           })
-          this.fetchDistribution(newPolicy) 
+          this.fetchDistribution() 
       }
   },
 
@@ -88,7 +89,7 @@ export default {
 
       onLoad (index, done) {
         if (this.nextURL) {
-          this.fetchAssets({url: this.nextURL})
+          this.fetchAssets({append:true})
         }
         done()
       },

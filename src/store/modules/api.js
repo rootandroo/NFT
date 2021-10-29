@@ -5,9 +5,11 @@ const state = () => ({
   urls: {},
   headers: {'Authorization':''},
   policyID: null,
-  serial: null,
-  nextURL: null,
-  tags: [],
+  serial: null, // Unecessary after Asset Modal is Linked
+  nextURL: null, // Next Page URL
+  tags: [], // Filter by {attribute:option}
+  rankFilter: {min: null, max: null}, // Filter by min and max rank
+  priceFilter: {}, // Filter by min and max price
   values: {}, // storing Tag Objects for refrence
   circulation: 0
 })
@@ -74,10 +76,10 @@ const actions = {
       })
   },
 
-  fetchDistribution({ commit, state, getters }, policyID) {
+  fetchDistribution({ commit, state, getters }) {
     const config = { headers: state.headers }
     axios
-      .get(state.urls.list_collection + policyID + '/', config)
+      .get(state.urls.list_collection + state.policyID + '/', config)
       .then(response => {
         commit('updateDistribution', response.data.distribution, {root:true})
         commit('updateKeys', response.data.included_keys, {root:true})
@@ -85,20 +87,21 @@ const actions = {
       })
   },
 
-  async fetchAssets ({ commit, state }, {policyID=null, url=null, serial=null}) {
-    var append = url === null ? false : true 
-    url = url || state.urls.list_asset
+  async fetchAssets ({ commit, state }, append=false) {
+    var url = append ? state.nextURL : state.urls.list_asset
+    
     const config = {
       headers: state.headers,
       params: {
-        policy_id: policyID,          
+        policy_id: state.policyID,          
         query_obj: JSON.stringify(state.tags),
-        serial: serial,
+        rank_filter: state.rankFilter,
+        serial: state.serial,
       }
     }
+
     try {
       const resp = await axios.get(url, config)
-
       var payload = { list: resp.data.results, append: append }
       commit('updateAssetList', payload, {root:true})
       commit('updateNextURL', resp.data.next)
@@ -142,6 +145,11 @@ const mutations = {
   
   updateCirculation (state, count) {
     state.circulation = count
+  },
+
+  updateRankFilter (state, {min, max}) {
+    state.rankFilter["min"] = min
+    state.rankFilter["max"] = max
   }
 } 
 

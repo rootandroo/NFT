@@ -38,7 +38,6 @@ export default {
     computed: {
         ...mapState('api', [
           'tags',
-          'policyID'
         ]),
 
         ...mapGetters('api', [
@@ -51,7 +50,7 @@ export default {
             },
             set (val) {
                 this.updateTags(val)
-                this.fetchAssets({policyID:this.policyID})
+                this.fetchAssets()
             }
         },
 
