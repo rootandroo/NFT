@@ -1,7 +1,8 @@
 ### TODO
 
 Frontend
-- [ ] Asset Modal  Vue Router (TLD/:project/:drop/:serial)
+- [ ] Link to Asset Modal (TLD/:project/:drop/:serial)
+    - [ ] Link to tweet
 - [ ] Add Selected Chain Indicator
 - [ ] Add Link To cnft.io
 - [ ] Dynamically Include and Exclude Fields When Sending Requests
