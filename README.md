@@ -1,6 +1,7 @@
 ### TODO
 
 Frontend
+- [ ] Filter by Rank
 - [ ] Link to Asset Modal (TLD/:project/:drop/:serial)
     - [ ] Link to tweet
 - [ ] Add Selected Chain Indicator
