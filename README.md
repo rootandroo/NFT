@@ -13,10 +13,10 @@ Frontend
 - [X] Add Modal for Each Asset
 - [X] Add Rarity Calculation
 - [X] Migrate To Vuex
-- [X] Add Close Button To AssetModal
-- [X] Add Distribution as Collection Field
+- ~~[ ] Add Close Button To AssetModal
 
 Backend
 - [ ] Periodic Price Fetching
 - [ ] Streamline Project Listing
 - [ ] Fetch Individual Asset by serial (Asset Modal)
+- [X] Add Distribution as Collection Field
