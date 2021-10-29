@@ -13,7 +13,7 @@ Frontend
 - [X] Add Modal for Each Asset
 - [X] Add Rarity Calculation
 - [X] Migrate To Vuex
-- ~~[ ] Add Close Button To AssetModal~~
+- ~~Add Close Button To AssetModal~~
 
 Backend
 - [ ] Periodic Price Fetching
