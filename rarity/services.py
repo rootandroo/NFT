@@ -1,8 +1,10 @@
-import asyncio, requests, math
+import asyncio, requests, math, logging
 from aiohttp import ClientSession, ClientResponseError
 from aiolimiter import AsyncLimiter
 from django.core.exceptions import ValidationError
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 config = settings.CONFIG
 
@@ -94,7 +96,6 @@ def validate_policy_id(policy_id):
     if r.status_code == 404:
         raise ValidationError(f'Invalid policy_id: {policy_id}')
 
-
 async def fetch_asset_mrkt_data(name, page, session, sem):
     url = 'https://api.cnft.io/market/listings'
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -113,7 +114,8 @@ async def fetch_asset_mrkt_data(name, page, session, sem):
                 assert market_resp.status == 200
                 info = await market_resp.json()
             except ClientResponseError:
-                await asyncio.sleep(5)
+                logger.warn('504 Error')
+                await asyncio.sleep(10)
         return info
 
 def fetch_col_mrkt_data(col):
@@ -121,7 +123,7 @@ def fetch_col_mrkt_data(col):
     async def coroutine():
         async with ClientSession(raise_for_status=True) as session:
             tasks = []
-            sem = asyncio.BoundedSemaphore(300)
+            sem = asyncio.BoundedSemaphore(200)
             for name in names:
                 init = await fetch_asset_mrkt_data(name, 1, session, sem)
                 num_pages = math.ceil(init['found'] / 25)

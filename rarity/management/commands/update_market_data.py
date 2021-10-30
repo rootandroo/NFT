@@ -14,7 +14,7 @@ class Command(BaseCommand):
         mrkt = "CNFTio"
         collections = Collection.objects.all()
         for col in collections:
-            logger.log(f'Fetching {col} from {mrkt}.')
+            logger.warn(f'Fetching {col} from {mrkt}.')
 
             col_mrkt_data = fetch_col_mrkt_data(col)
             for page in col_mrkt_data:

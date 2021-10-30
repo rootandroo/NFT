@@ -44,6 +44,8 @@ class Collection(models.Model):
                     onchain_metadata=flatten_metadata(asset['onchain_metadata']),
                     collection=self)
                 asset_obj.save()
+        
+        self.assets.filter(onchain_metadata__contains={"":None}).delete()
 
         if self.included_keys:
             # Update distribution
@@ -138,7 +140,7 @@ class Asset(models.Model):
         self.save()
 
     def set_alpha_name(self):
-        title = self.onchain_metadata.get('name', self.onchain_metadata.get('title'))
+        title = self.onchain_metadata.get('name')
         self.alpha_name = ''.join(re.findall(r'[a-zA-Z_ ]+', title))
         self.save()        
 

@@ -44,6 +44,7 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
         tags = self.request.query_params.get('query_obj')
         serial = self.request.query_params.get('serial')
         rank_filter = self.request.query_params.get('rank_filter')
+        price_filter = self.request.query_params.get('price_filter')
 
         if policy_id is not None:
             queryset = queryset.filter(policy_id=policy_id)
@@ -58,6 +59,12 @@ class AssetViewSet(viewsets.ReadOnlyModelViewSet):
             if min: queryset = queryset.filter(rank__gte=min)
             if max: queryset = queryset.filter(rank__lte=max)
             
+        if price_filter:
+            price_filter = json.loads(price_filter)
+            min, max = (price_filter["min"], price_filter["max"])
+            if min: queryset = queryset.filter(market__CNFTio__price__gte=min * 1_000_000)
+            if max: queryset = queryset.filter(market__CNFTio__price__lte=max * 1_000_000)
+
         if tags:
             tags = json.loads(tags)
             for tag in tags:

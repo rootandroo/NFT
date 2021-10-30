@@ -20,5 +20,5 @@ class AssetSerializer(serializers.ModelSerializer):
     onchain_metadata = serializers.JSONField(allow_null=True)
     class Meta:
         model = Asset
-        fields = ['name', 'policy_id', 'onchain_metadata', 'score', 'rank', 'serial', 'alpha_name'] 
+        fields = ['name', 'policy_id', 'onchain_metadata', 'score', 'rank', 'serial', 'alpha_name', 'market'] 
 
