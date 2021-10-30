@@ -1,5 +1,5 @@
-import asyncio, requests
-from aiohttp import ClientSession
+import asyncio, requests, math
+from aiohttp import ClientSession, ClientResponseError
 from aiolimiter import AsyncLimiter
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -95,16 +95,37 @@ def validate_policy_id(policy_id):
         raise ValidationError(f'Invalid policy_id: {policy_id}')
 
 
+async def fetch_asset_mrkt_data(name, page, session, sem):
+    url = 'https://api.cnft.io/market/listings'
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    data = {
+        'search': name,
+        'sort': 'date',
+        'order': 'desc',
+        'page': page,
+        'verified': 'true'
+    }
+    async with sem:
+        info = None
+        while not info:
+            try:
+                market_resp = await session.post(url=url, headers=headers, data=data)
+                assert market_resp.status == 200
+                info = await market_resp.json()
+            except ClientResponseError:
+                await asyncio.sleep(5)
+        return info
 
-
-
-
-
-
-
-
-
-
-
-
-
+def fetch_col_mrkt_data(col):
+    names = set(col.assets.all().values_list('alpha_name', flat=True))
+    async def coroutine():
+        async with ClientSession(raise_for_status=True) as session:
+            tasks = []
+            sem = asyncio.BoundedSemaphore(300)
+            for name in names:
+                init = await fetch_asset_mrkt_data(name, 1, session, sem)
+                num_pages = math.ceil(init['found'] / 25)
+                for page in range(1, num_pages):
+                    tasks.append(fetch_asset_mrkt_data(name, page, session, sem))
+            return await asyncio.gather(*tasks)            
+    return asyncio.run(coroutine())

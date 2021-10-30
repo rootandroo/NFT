@@ -136,11 +136,9 @@ class Asset(models.Model):
                 calc_score(key, value)
         self.save()
 
-
     def set_alpha_name(self):
-        bytes_obj = bytes.fromhex(self.name)
-        ascii = bytes_obj.decode('ASCII')
-        self.alpha_name = ''.join(re.findall(r'[a-zA-Z]+', ascii))
+        title = self.onchain_metadata.get('name', self.onchain_metadata.get('title'))
+        self.alpha_name = ''.join(re.findall(r'[a-zA-Z_]+', title))
         self.save()        
 
     def set_serial(self):

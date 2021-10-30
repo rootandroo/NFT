@@ -169,6 +169,10 @@ LOGGING = {
         'rarity.views': {
             "handlers": ["file"],
             'level': 'INFO',
+        },
+        'rarity.management.commands.update_market_data': {
+            "handlers": ["file"],
+            'level': 'INFO',
         }
     },
     "formatters": {
