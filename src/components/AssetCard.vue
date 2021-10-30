@@ -5,15 +5,6 @@
   >
     <div class="text-body1 text-weight-bold text-dark">
       {{ '#' + asset.rank }}
-      <!-- <span
-        v-if="price"
-        class="text-positive text-h6 float-right"
-      >{{ formatToAda(price) }}</span>
-      <q-skeleton
-        v-else-if="price === null"
-        type="QBadge"
-        class="float-right q-mt-sm"
-      /> -->
     </div>
     <q-img 
       :src="fetchImagePath(asset.onchain_metadata.image)" 
@@ -28,14 +19,22 @@
         />
       </template>
     </q-img>
-    <q-card-section class="asset-name text-dark ellipsis">
-      <span class="text-body2  text-weight-medium">{{ getAssetLabel(asset) }}</span>
+    <q-card-section class="text-dark q-pa-sm">
+      <div class="row justify-center">
+        <span class="text-body2  ellipsis text-weight-medium ">
+          {{ getAssetLabel(asset) }}
+        </span>
+      </div>
+      <div class="row text-positive text-weight-bold text-body2 justify-center">
+        <span :class="[!asset.market?.CNFTio.price ? 'text-white' : '']">{{ toADA(asset.market?.CNFTio.price) }} ADA</span>
+      </div>
     </q-card-section>
     <q-dialog v-model="modal">
       <asset-modal-content
         :src="fetchImagePath(asset.onchain_metadata.image)"
         :asset="asset"
         :label="getAssetLabel(asset)"
+        :price="toADA(asset.market?.CNFTio.price)"
       />
     </q-dialog>
   </q-card>
@@ -43,7 +42,6 @@
 
 <script>
 import AssetModalContent from '../components/AssetModalContent.vue'
-// import axios from 'axios'
 
 export default {
 
@@ -71,14 +69,10 @@ export default {
           return asset => `#${asset.serial} ${asset.alpha_name}`
       },
 
-      // formatToAda () {
-      //   return lovelace => lovelace / 1_000_000 + " ADA"
-      // }
+      toADA () {
+        return price => price / 1_000_000
+      }
   },
-
-  // created () {
-  //   this.fetchAssetMarketInfo(this.asset.onchain_metadata.name)
-  // },
 
   methods: {
       fetchImagePath (ipfs) {
@@ -90,10 +84,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.asset-name {
-  text-align: center;
-}
-
 .asset-img {
   border-radius: 4px !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;

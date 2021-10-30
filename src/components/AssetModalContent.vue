@@ -7,6 +7,7 @@
           :src="src" 
           loading="lazy"
           no-spinner
+          img-class="rounded-borders"
         >
           <template #loading>
             <q-skeleton
@@ -15,10 +16,25 @@
             />
           </template>
         </q-img>
-        <q-card-section class="title text-body2 text-dark text-weight-bold ellipsis">
+        <q-card-section class="title text-body1 text-dark text-weight-bold ellipsis">
           {{ label }}
         </q-card-section>
       </q-card>
+      <q-btn
+        v-if="price"
+        class="row rounded-borders bg-positive justify-center q-pa-sm q-mt-sm full-width"
+        @click="openCNFTio(asset.market?.CNFTio.id)"
+      >
+        <q-avatar
+          class="q-mr-md"
+          square
+        >
+          <img src="../assets/cnft.png">
+        </q-avatar>
+        <div class="q-pa-sm text-positive rounded-borders bg-white text-h6 text-weight-bolder self-center">
+          <span>{{ price }} ADA</span>
+        </div>
+      </q-btn>
     </div>
     <div 
       v-if="includedKeys"
@@ -32,7 +48,7 @@
           color="white"
           class="q-mt-sm row justify-center "
         >
-          <span class="text-h6 text-positive">
+          <span class="text-h6 text-positive text-weight-bold">
             {{ asset.score }}
           </span>
         </q-badge>
@@ -45,7 +61,7 @@
             :key="key"
             class="q-mb-xs rounded-borders text-dark"
           >
-            <q-card-section class="q-pa-sm">
+            <q-card-section class="q-px-sm q-pb-sm q-pt-none">
               <span class="text-body1">{{ getLabel(key) }}</span>
               <q-list
                 class="q-ma-xs"
@@ -82,6 +98,7 @@
 <script>
 import DistCheckbox from './DistCheckbox.vue'
 import { mapState, mapGetters } from 'vuex'
+import { openURL } from 'quasar'
 
 export default {
   components: {
@@ -89,7 +106,7 @@ export default {
   },
 
   // eslint-disable-next-line vue/require-prop-types
-  props: ['src', 'asset', 'label'],
+  props: ['src', 'asset', 'label', 'price'],
 
   computed: {
     ...mapState([
@@ -115,6 +132,12 @@ export default {
       return key => {
         return this.asset.onchain_metadata[key] ? this.asset.onchain_metadata[key] : 'null'
       }
+    }
+  },
+
+  methods: {
+    openCNFTio (id) {
+      openURL("https://cnft.io/token.php?id=" + id)
     }
   }
 }

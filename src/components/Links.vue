@@ -3,7 +3,7 @@
     dense
     flat
     type="a"
-    href="https://discord.gg/duP35BsCvu"
+    @click="open('https://discord.gg/duP35BsCvu')"
   >
     <svg
       width="24"
@@ -34,8 +34,7 @@
     class="q-ml-sm"
     dense
     flat
-    type="a"
-    href="https://twitter.com/nftrarityis"
+    @click="open('https://twitter.com/nftrarityis')"
   >
     <svg
       fill="white"
@@ -52,7 +51,15 @@
 </template>
 
 <script>
-export default {};
+import { openURL } from 'quasar'
+
+export default {
+  methods: {
+    open (url) {
+      openURL(url)
+    }  
+  }
+};
 </script>
 
 <style></style>
