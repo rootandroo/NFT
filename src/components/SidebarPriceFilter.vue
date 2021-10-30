@@ -2,7 +2,7 @@
   <q-form
     class="row q-gutter-md items-center"
     @submit="onSubmit"
-  > 
+  >
     <q-input
       v-model="min"
       class="col-3"
@@ -10,8 +10,8 @@
       label-color="white"
       dense
       dark
-      hint="RANK"
       type="number"
+      hint="PRICE"
     />
     <q-input
       v-model="max"
@@ -20,8 +20,8 @@
       label-color="white"
       dense
       dark
-      hint=""
       type="number"
+      hint=""
     />
     <div>
       <q-btn
@@ -46,14 +46,14 @@ export default {
       }
   },
   methods: {
-    ...mapMutations("api", ["updateRankFilter"]),
+    ...mapMutations("api", ["updatePriceFilter"]),
 
     ...mapActions("api", ["fetchAssets"]),
 
     onSubmit () {
       var min = this.min ? parseInt(this.min) : null 
       var max = this.max ? parseInt(this.max) : null
-      this.updateRankFilter({ min, max})
+      this.updatePriceFilter({min, max})
       this.fetchAssets()
     }
   }
@@ -61,4 +61,5 @@ export default {
 </script>
 
 <style>
+
 </style>

@@ -16,25 +16,28 @@
             />
           </template>
         </q-img>
-        <q-card-section class="title text-body1 text-dark text-weight-bold ellipsis">
-          {{ label }}
+        <q-card-section class="text-body1 text-dark text-weight-bold ellipsis">
+          <span class="row justify-center">{{ label }}</span>
+          <div class="row justify-center">
+            <q-btn
+              v-if="price"
+              class="rounded-borders bg-positive q-pa-sm q-mt-sm title"
+              @click="openCNFTio(asset.market?.CNFTio.id)"
+            >
+              <q-avatar
+                size="sm"
+                class="q-mr-sm"
+                square
+              >
+                <img src="../assets/cnft.png">
+              </q-avatar>
+              <div class="q-px-sm text-positive rounded-borders bg-white text-h6 text-weight-bolder self-center">
+                <span>{{ price }} ADA</span>
+              </div>
+            </q-btn>
+          </div>
         </q-card-section>
       </q-card>
-      <q-btn
-        v-if="price"
-        class="row rounded-borders bg-positive justify-center q-pa-sm q-mt-sm full-width"
-        @click="openCNFTio(asset.market?.CNFTio.id)"
-      >
-        <q-avatar
-          class="q-mr-md"
-          square
-        >
-          <img src="../assets/cnft.png">
-        </q-avatar>
-        <div class="q-pa-sm text-positive rounded-borders bg-white text-h6 text-weight-bolder self-center">
-          <span>{{ price }} ADA</span>
-        </div>
-      </q-btn>
     </div>
     <div 
       v-if="includedKeys"

@@ -117,6 +117,6 @@ export default {
   }
 
   .dist-wrapper {
-    height: calc(100vh - 380px);
+    height: calc(100vh - 465px);
   }
 </style>

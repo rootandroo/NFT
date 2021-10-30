@@ -13,9 +13,15 @@
     </q-item>
 
     <q-item class="q-mt-xs">
-      <sidebar-rank-filter v-if="distribution" />
+      <q-item-section v-if="distribution">
+        <q-item-label class="text-white text-body1">
+          Filters
+        </q-item-label>
+        <sidebar-rank-filter />
+        <sidebar-price-filter />
+      </q-item-section>
     </q-item>
-
+    
     <q-item class="dist-wrapper q-mt-xs">
       <distribution
         v-if="distribution"
@@ -36,12 +42,15 @@ import SidebarProjectSelect from "./SidebarProjectSelect.vue";
 import SidebarDropSelect from "./SidebarDropSelect.vue";
 import SidebarSerialSelect from "./SidebarSerialSelect.vue";
 import SidebarRankFilter from "./SidebarRankFilter.vue"
+import SidebarPriceFilter from "./SidebarPriceFilter.vue"
+
 import { mapState } from "vuex";
 
 export default {
   name: "SidebarContent",
 
   components: {
+    SidebarPriceFilter,
     SidebarRankFilter,
     SidebarSerialSelect,
     SidebarProjectSelect,

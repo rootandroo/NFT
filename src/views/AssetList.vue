@@ -62,7 +62,12 @@ export default {
       },
       policyID (newPolicy, oldPolicy) {
           console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
-          this.updateTags([]) // Clear Selected Tags
+           
+          //  Reset Filters
+          this.updateTags([]) 
+          this.updatePriceFilter({min:null, max:null})
+          this.updateRankFilter({min:null, max:null})
+
           this.resetScrollArea()
           this.fetchAssets().then(resp => {
             this.updateCirculation(resp.found)
@@ -84,7 +89,9 @@ export default {
 
       ...mapMutations('api', [
         'updateTags',
-        'updateCirculation'
+        'updateCirculation',
+        "updatePriceFilter",
+        "updateRankFilter"
       ]),
 
       onLoad (index, done) {

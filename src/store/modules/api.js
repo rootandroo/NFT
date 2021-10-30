@@ -5,12 +5,12 @@ const state = () => ({
   urls: {},
   headers: {'Authorization':''},
   policyID: null,
-  serial: null, // Unecessary after Asset Modal is Linked
+  serial: null, // Unecessary after Asset Modal is Linked with Vue Router
   nextURL: null, // Next Page URL
   tags: [], // Filter by {attribute:option}
-  rankFilter: {min: null, max: null}, // Filter by min and max rank
-  priceFilter: {}, // Filter by min and max price
-  values: {}, // storing Tag Objects for refrence
+  values: {}, // storing Tag Objects for reference
+  rankFilter: {"min": null, "max": null}, // Filter by min and max rank
+  priceFilter: {"min": null, "max": null}, // Filter by min and max price
   circulation: 0
 })
 
@@ -96,6 +96,7 @@ const actions = {
         policy_id: state.policyID,          
         query_obj: JSON.stringify(state.tags),
         rank_filter: state.rankFilter,
+        price_filter: state.priceFilter,
         serial: state.serial,
       }
     }
@@ -150,6 +151,11 @@ const mutations = {
   updateRankFilter (state, {min, max}) {
     state.rankFilter["min"] = min
     state.rankFilter["max"] = max
+  },
+
+  updatePriceFilter (state, {min, max}) {
+    state.priceFilter["min"] = min
+    state.priceFilter["max"] = max
   }
 } 
 
