@@ -4,57 +4,50 @@
       Distribution 
       <span class="float-right text-caption">{{ circulation }} Assets</span>
     </q-item-label>
-    <div class="dist-wrapper">
-      <q-scroll-area
-        class="fit"
-        dark
+    <q-list
+      dark
+      class="rounded-borders"
+    >
+      <q-expansion-item
+        v-for="[trait, obj] in Object.entries(distribution)"
+        :key="trait"
+        dense
+        :label="getLabel(trait)"
+        header-class="text-body1"
       >
         <q-list
-          dark
-          class="rounded-borders"
+          class="q-py-sm q-px-md"
         >
-          <q-expansion-item
-            v-for="[trait, obj] in Object.entries(distribution)"
-            :key="trait"
-            dense
-            :label="getLabel(trait)"
-            header-class="text-body1"
+          <div 
+            v-if="includedKeys[trait] || !isTraitSelected(trait)"
           >
-            <q-list
-              class="q-py-sm q-px-md"
-            >
-              <div 
-                v-if="includedKeys[trait] || !isTraitSelected(trait)"
-              >
-                <dist-checkbox 
-                  v-for="[option, count] in Object.entries(obj)"
-                  :key="option"            
-                  :trait="trait"
-                  :option="option"
-                  :count="count"
-                  :tag-obj="values[trait][option]"
-                  :is-active="isActive(trait, option)"
-                />
-              </div>
-              <div 
-                v-for="[option, count] in Object.entries(obj)"
-                v-else
-                :key="option"
-              >
-                <dist-checkbox
-                  v-if="isActive(trait, option)"
-                  :trait="trait"
-                  :option="option"
-                  :count="count"
-                  :tag-obj="values[trait][option]"
-                  :is-active="true"
-                />
-              </div>
-            </q-list>
-          </q-expansion-item>
+            <dist-checkbox 
+              v-for="[option, count] in Object.entries(obj)"
+              :key="option"            
+              :trait="trait"
+              :option="option"
+              :count="count"
+              :tag-obj="values[trait][option]"
+              :is-active="isActive(trait, option)"
+            />
+          </div>
+          <div 
+            v-for="[option, count] in Object.entries(obj)"
+            v-else
+            :key="option"
+          >
+            <dist-checkbox
+              v-if="isActive(trait, option)"
+              :trait="trait"
+              :option="option"
+              :count="count"
+              :tag-obj="values[trait][option]"
+              :is-active="true"
+            />
+          </div>
         </q-list>
-      </q-scroll-area>
-    </div>
+      </q-expansion-item>
+    </q-list>
   </q-item-section>
 </template>
 
@@ -114,9 +107,5 @@ export default {
 
   .q-item.active {
     background-color: #74eda5 !important;
-  }
-
-  .dist-wrapper {
-    height: calc(100vh - 465px);
   }
 </style>

@@ -1,34 +1,40 @@
 <template>
   <q-list>
-    <q-item>
-      <sidebar-project-select :project-list="projectList" />
-    </q-item>
+    <div class="dist-wrapper">
+      <q-scroll-area
+        class="fit"
+        dark
+      >
+        <q-item>
+          <sidebar-project-select :project-list="projectList" />
+        </q-item>
 
-    <q-item class="q-mt-xs">
-      <sidebar-drop-select :policy-list="policyList" />
-    </q-item>
+        <q-item class="q-mt-xs">
+          <sidebar-drop-select :policy-list="policyList" />
+        </q-item>
 
-    <q-item class="q-mt-xs">
-      <sidebar-serial-select v-if="distribution" />
-    </q-item>
+        <q-item class="q-mt-xs">
+          <sidebar-serial-select v-if="distribution" />
+        </q-item>
 
-    <q-item class="q-mt-xs">
-      <q-item-section v-if="distribution">
-        <q-item-label class="text-white text-body1">
-          Filters
-        </q-item-label>
-        <sidebar-rank-filter />
-        <sidebar-price-filter />
-      </q-item-section>
-    </q-item>
+        <q-item class="q-mt-xs">
+          <q-item-section v-if="distribution">
+            <q-item-label class="text-white text-body1">
+              Filters
+            </q-item-label>
+            <sidebar-rank-filter />
+            <sidebar-price-filter />
+          </q-item-section>
+        </q-item>
     
-    <q-item class="dist-wrapper q-mt-xs">
-      <distribution
-        v-if="distribution"
-        :distribution="distribution"
-      />
-    </q-item>
-
+        <q-item class="q-mt-xs q-mb-xl">
+          <distribution
+            v-if="distribution"
+            :distribution="distribution"
+          />
+        </q-item>
+      </q-scroll-area>
+    </div>
     <q-item class="fixed-bottom">
       <donate-modal />
     </q-item>
@@ -68,4 +74,7 @@ export default {
 
 
 <style lang="scss" scoped>
+  .dist-wrapper {
+    height: calc(100vh - 60px);
+  }
 </style>
