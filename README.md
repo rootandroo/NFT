@@ -18,7 +18,7 @@ Frontend
 
 Backend
 - [X] Periodic Price Fetching
-- [ ] Improve Price Fetching Speeding 
+- [ ] Improve Price Fetching Speed
 - [ ] Streamline Project Listing
 - [ ] Fetch Individual Asset by serial (Asset Modal)
 - [X] Add Distribution as Collection Field
