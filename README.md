@@ -17,7 +17,8 @@ Frontend
 - ~~Add Close Button To AssetModal~~
 
 Backend
-- [ ] Periodic Price Fetching
+- [X] Periodic Price Fetching
+- [ ] Improve Price Fetching Speeding 
 - [ ] Streamline Project Listing
 - [ ] Fetch Individual Asset by serial (Asset Modal)
 - [X] Add Distribution as Collection Field
