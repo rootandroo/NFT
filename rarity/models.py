@@ -57,7 +57,6 @@ class Collection(models.Model):
             for asset in assets:
                 asset.set_score(self.distribution, keys, len(assets))
                 asset.set_alpha_name()
-                asset.set_decoded_name()
                 asset.set_serial()
 
             # Set Asset Rank
@@ -66,6 +65,21 @@ class Collection(models.Model):
                 asset_obj.save()
         super().save(*args, **kwargs)
 
+    def update(self):
+        asset_list = fetch_all_assets(self.policy_id)
+        for asset in asset_list:
+            try:
+                asset = Asset.objects.get(name=asset['asset_name'])
+            except Asset.DoesNotExist:
+                asset = Asset(
+                    name=asset['asset_name'],
+                    policy_id=asset['policy_id'],
+                    fingerprint=asset['fingerprint'],
+                    quantity=asset['quantity'],
+                    mint_tx_hash=asset['initial_mint_tx_hash'], 
+                    onchain_metadata=flatten_metadata(asset['onchain_metadata']),
+                    collection=self)
+                asset.save()
 
     def fetch_distribution(self, keys, assets):
         def parse_obj(key, object):
@@ -102,14 +116,13 @@ class Collection(models.Model):
 class Asset(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     policy_id = models.CharField(max_length=56)
-    fingerprint = models.CharField(max_length=44, unique=True)
+    fingerprint = models.CharField(max_length=44)
     quantity = models.PositiveBigIntegerField()
     mint_tx_hash = models.CharField(max_length=64)
     onchain_metadata = models.JSONField(null=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='assets')
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
-    decoded_name = models.CharField(max_length=100, null=True)
     alpha_name = models.CharField(max_length=100, null=True)
     serial = models.PositiveIntegerField(null=True)
     market = models.JSONField(null=True)
@@ -128,7 +141,6 @@ class Asset(models.Model):
             trait_score = 1 / (num_with_trait / total_num)
             self.score += trait_score
 
-
         metadata = self.onchain_metadata
         for key in included_keys:
             value = metadata.get(key, None)
@@ -143,13 +155,13 @@ class Asset(models.Model):
         title = self.onchain_metadata.get('name')
         self.alpha_name = ''.join(re.findall(r'[a-zA-Z_ ]+', title))
         self.save()        
-
-    def set_decoded_name(self):
-        bytes_obj = bytes.fromhex(self.name)
-        self.decoded_name = bytes_obj.decode('ASCII')
-        self.save()
         
     def set_serial(self):
         result = re.findall(r'\d+', self.decoded_name)
         if result: self.serial = result[-1]
         self.save()
+
+    @property
+    def decoded_name(self):
+        bytes_obj = bytes.fromhex(self.name)
+        return bytes_obj.decode('ASCII')

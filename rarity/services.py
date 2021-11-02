@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 
 config = settings.CONFIG
 
+
+# BLOCKFROST
+
 headers = {'project_id': config['BLOCKFROST_API_KEY']}
 
 def fetch_all_assets(policy_id, num_pages=None):
@@ -96,6 +99,10 @@ def validate_policy_id(policy_id):
     if r.status_code == 404:
         raise ValidationError(f'Invalid policy_id: {policy_id}')
 
+
+
+# CNFT.io
+
 async def fetch_asset_mrkt_data(name, page, session, sem):
     url = 'https://api.cnft.io/market/listings'
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -115,19 +122,20 @@ async def fetch_asset_mrkt_data(name, page, session, sem):
                 info = await market_resp.json()
             except ClientResponseError:
                 logger.warn('504 Error')
-                await asyncio.sleep(10)
+                await asyncio.sleep(5)
         return info
 
-def fetch_col_mrkt_data(col):
-    names = set(col.assets.all().values_list('alpha_name', flat=True))
+
+def fetch_mrkt_data(collections):
     async def coroutine():
         async with ClientSession(raise_for_status=True) as session:
             tasks = []
-            sem = asyncio.BoundedSemaphore(200)
-            for name in names:
-                init = await fetch_asset_mrkt_data(name, 1, session, sem)
+            sem = asyncio.BoundedSemaphore(500)
+            for col in collections:
+                logger.warn(f'Fetching market data for {col}')
+                init = await fetch_asset_mrkt_data(col.policy_id, 1, session, sem)
                 num_pages = math.ceil(init['found'] / 25)
                 for page in range(1, num_pages):
-                    tasks.append(fetch_asset_mrkt_data(name, page, session, sem))
+                    tasks.append(fetch_asset_mrkt_data(col.policy_id, page, session, sem))
             return await asyncio.gather(*tasks)            
     return asyncio.run(coroutine())
