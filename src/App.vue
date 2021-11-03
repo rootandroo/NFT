@@ -13,19 +13,9 @@
           dense
           flat
           round
-          icon="menu"
+          icon="search"
           @click="toggleSidebar"
         />
-        <q-toolbar-title>
-          <!-- <q-img
-            id="logo"
-            src="./assets/logo.png"
-          /> -->
-          <h6 class="q-ma-none">
-            NFT RARITY
-          </h6>
-        </q-toolbar-title>
-
         <links />
       </q-toolbar>
     </q-header>
@@ -34,7 +24,6 @@
     <q-drawer
       v-model="sidebar"
       class="bg-dark"
-      show-if-above
       side="left"
       :width="300"
       :breakpoint="500"

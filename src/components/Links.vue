@@ -1,4 +1,37 @@
 <template>
+  <div
+    class="q-ml-xs q-gutter-md text-body1 row items-center no-wrap"
+  >
+    <a
+      href="javascript:void(0)"
+      class="text-white"
+    >
+      Upcoming
+    </a>
+    <q-separator
+      dark
+      vertical
+    />
+    <a
+      href="javascript:void(0)"
+      class="text-white"
+    >
+      Get Listed
+    </a>
+    <q-separator
+      dark
+      vertical
+    />
+    <a
+      href="javascript:void(0)"
+      class="text-white"
+    >
+      About
+    </a>
+  </div>
+
+  <q-space />
+
   <q-btn
     dense
     flat
@@ -62,4 +95,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+a:link {
+  text-decoration: none;
+}
+</style>

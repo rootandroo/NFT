@@ -22,7 +22,7 @@
             <q-btn
               v-if="price"
               class="rounded-borders bg-positive q-pa-sm q-mt-sm title"
-              @click="openCNFTio(asset.market?.CNFTio.id)"
+              @click="open(asset.market?.CNFTio.id)"
             >
               <q-avatar
                 size="sm"
@@ -139,8 +139,8 @@ export default {
   },
 
   methods: {
-    openCNFTio (id) {
-      openURL("https://cnft.io/token.php?id=" + id)
+    open (id) {
+      openURL("https://cnft.io/token/" + id)
     }
   }
 }
