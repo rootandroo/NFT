@@ -12,17 +12,23 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         market = "CNFTio"
-        collections = Collection.objects.all()
+        collections = list(Collection.objects.all())
         
+        logger.info(f'Fetching market data...')
+
         market_data = fetch_mrkt_data(collections)
 
+        logger.info(f'Finished fetching market data.')
+        
         for page in market_data:
-            for asset_data in page['assets']:
-                id = asset_data['id']
+            names = [asset['asset']['assetId'] for asset in page["results"]]
+            assets = Asset.objects.filter(decoded_name__in=names)
+            for asset_data in page["results"]:
+                id = asset_data['_id']
                 price = asset_data['price']
-                name = asset_data['metadata']['name']
+                name = asset_data['asset']['assetId']
                 try:
-                    asset = Asset.objects.get(onchain_metadata__name=name)    
+                    asset = assets.get(decoded_name=name)    
                     asset.market = {}
                     asset.market[market] = {}
                     asset.market[market]['price'] = price
@@ -30,3 +36,5 @@ class Command(BaseCommand):
                     asset.save()
                 except ObjectDoesNotExist:
                     logger.warn(f'Asset with name: {name} does not exist.')
+        
+        logger.info(f'Updated all prices for new listings.')

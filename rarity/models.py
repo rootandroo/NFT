@@ -19,11 +19,14 @@ class Project(models.Model):
 
 
 class Collection(models.Model):
+    release_date = models.DateField(null=True, blank=True)
     policy_id = models.CharField(max_length=56, primary_key=True, validators=[validate_policy_id])
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='collections')
     included_keys = models.JSONField(null=True, blank=True)
     distribution = models.JSONField(null=True, blank=True)
-
+    name = models.CharField(max_length=100, null=True, blank=True)
+    image_url = models.URLField(max_length=200, null=True, blank=True)
+    
     class Meta:
         ordering = ['project']
 
@@ -55,6 +58,7 @@ class Collection(models.Model):
 
             # Set Asset Score, Alphabetical Name, and Serial
             for asset in assets:
+                asset.set_decoded_name()
                 asset.set_score(self.distribution, keys, len(assets))
                 asset.set_alpha_name()
                 asset.set_serial()
@@ -94,14 +98,14 @@ class Collection(models.Model):
                     dist[key][object] = 1
             else:
                 # Missing either or both of key:value pair
-                asset.onchain_metadata[key] = None
+                asset.onchain_metadata[key] = "null"
                 asset.save()
 
                 if key in dist:
-                    dist[key][None] = dist[key].get(None, 0) + 1
+                    dist[key]["null"] = dist[key].get("null", 0) + 1
                 else:
                     dist[key] = {}
-                    dist[key][None] = 1
+                    dist[key]["null"] = 1
         dist = {}
         for key in keys:
             for asset in assets:
@@ -124,6 +128,7 @@ class Asset(models.Model):
     score = models.DecimalField(max_digits=8, decimal_places=2, null=True)    
     rank = models.PositiveIntegerField(null=True)
     alpha_name = models.CharField(max_length=100, null=True)
+    decoded_name = models.CharField(max_length=100, null=True)
     serial = models.PositiveIntegerField(null=True)
     market = models.JSONField(null=True)
      
@@ -161,7 +166,7 @@ class Asset(models.Model):
         if result: self.serial = result[-1]
         self.save()
 
-    @property
-    def decoded_name(self):
+    def set_decoded_name(self):
         bytes_obj = bytes.fromhex(self.name)
-        return bytes_obj.decode('ASCII')
+        self.decoded_name = bytes_obj.decode('ASCII')
+        self.save()

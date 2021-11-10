@@ -103,21 +103,25 @@ def validate_policy_id(policy_id):
 
 # CNFT.io
 
-async def fetch_asset_mrkt_data(name, page, session, sem):
+async def fetch_asset_mrkt_data(policy, page, session, sem):
     url = 'https://api.cnft.io/market/listings'
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     data = {
-        'search': name,
-        'sort': 'date',
-        'order': 'desc',
-        'page': page,
-        'verified': 'true'
+        "search": policy,
+        "types":["listing"],
+        "project":None,
+        "sort":{"_id":-1},
+        "priceMin":None,
+        "priceMax":None,
+        "page": page,
+        "verified":True,
+        "nsfw":False,
+        "sold":False
     }
     async with sem:
         info = None
         while not info:
             try:
-                market_resp = await session.post(url=url, headers=headers, data=data)
+                market_resp = await session.post(url=url, json=data)
                 assert market_resp.status == 200
                 info = await market_resp.json()
             except ClientResponseError:
@@ -132,10 +136,7 @@ def fetch_mrkt_data(collections):
             tasks = []
             sem = asyncio.BoundedSemaphore(500)
             for col in collections:
-                logger.warn(f'Fetching market data for {col}')
-                init = await fetch_asset_mrkt_data(col.policy_id, 1, session, sem)
-                num_pages = math.ceil(init['found'] / 25)
-                for page in range(1, num_pages):
+                for page in range(1, 10):
                     tasks.append(fetch_asset_mrkt_data(col.policy_id, page, session, sem))
             return await asyncio.gather(*tasks)            
     return asyncio.run(coroutine())
