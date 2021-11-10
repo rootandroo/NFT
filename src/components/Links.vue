@@ -1,6 +1,6 @@
 <template>
   <div
-    class="q-ml-xs q-gutter-md text-body1 row items-center no-wrap"
+    class="q-ml-xs q-gutter-md text-body1 row items-center no-wrap gt-xs"
   >
     <a
       href="javascript:void(0)"
@@ -13,7 +13,7 @@
       vertical
     />
     <a
-      href="javascript:void(0)"
+      href="/list"
       class="text-white"
     >
       Get Listed

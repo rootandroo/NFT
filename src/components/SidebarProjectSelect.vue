@@ -9,6 +9,8 @@
       use-input
       fill-input
       hide-selected
+      options-selected-class="text-positive"
+      popup-content-class="options"
       :options="projects"
       @update:model-value="val => { handleProjectSelect(val) }" 
       @filter="filterFn"
@@ -58,5 +60,13 @@ export default {
 </script>
 
 <style>
+.options {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+  overflow-y: scroll; 
+}
 
+.options::-webkit-scrollbar {
+  display: none;
+}
 </style>

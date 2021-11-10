@@ -1,32 +1,23 @@
 <template>
   <q-page v-if="policyID">
-    <q-scroll-area
-      ref="scrollArea"
-      :thumb-style="{
-        background:'white',
-        opacity: 1,
-        width: '6px',
-        right: '4px'}"
+    <q-infinite-scroll 
+      :offset="250"
+      :debounce="700"
+      @load="onLoad"
     >
-      <q-infinite-scroll 
-        :offset="250"
-        :debounce="700"
-        @load="onLoad"
+      <div
+        class="card-group q-pa-lg q-gutter-md"
+        :v-if="assetList"
       >
-        <div
-          class="card-group q-pa-lg q-gutter-md"
-          :v-if="assetList"
+        <q-intersection
+          v-for="asset in assetList"
+          :key="asset.name"
+          transition="fade"
         >
-          <q-intersection
-            v-for="asset in assetList"
-            :key="asset.name"
-            transition="fade"
-          >
-            <asset-card :asset="asset" />
-          </q-intersection>
-        </div>
-      </q-infinite-scroll>
-    </q-scroll-area>
+          <asset-card :asset="asset" />
+        </q-intersection>
+      </div>
+    </q-infinite-scroll>
   </q-page>
 </template>
 
@@ -114,10 +105,6 @@ export default {
 .card-group {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-}
-
-.q-scrollarea {
-    height: calc(100vh - 50px);
 }
 
 .q-intersection {

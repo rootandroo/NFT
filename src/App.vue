@@ -16,6 +16,12 @@
           icon="search"
           @click="toggleSidebar"
         />
+        <a
+          href="/"
+          class="text-white text-h6"
+        >
+          NFT RARITY
+        </a>
         <links />
       </q-toolbar>
     </q-header>
@@ -23,17 +29,26 @@
     <!-- Sidebar -->
     <q-drawer
       v-model="sidebar"
+      show-if-above
       class="bg-dark"
       side="left"
       :width="300"
-      :breakpoint="500"
     >
       <sidebar-content />
     </q-drawer>
 
     <!-- Content -->
     <q-page-container>
-      <router-view />
+      <q-scroll-area
+        ref="scrollArea"
+        :thumb-style="{
+          background:'white',
+          opacity: 1,
+          width: '6px',
+          right: '4px'}"
+      >
+        <router-view />
+      </q-scroll-area>
     </q-page-container>
   </q-layout>
 </template>
@@ -84,5 +99,13 @@ export default {
 <style lang="scss" scoped>
   #logo {
     width: 150px;
+  }
+
+  .q-scrollarea {
+    height: calc(100vh - 50px);
+  }
+
+  a:link {
+    text-decoration: none;
   }
 </style>
