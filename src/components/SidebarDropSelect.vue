@@ -2,14 +2,13 @@
   <q-item-section>
     <div style="max-width: 268px">
       <q-select
-        v-model="policyID"
+        v-model="policyIDInput"
         label="Select Drop"
         label-color="white"
         options-dense
         options-selected-class="text-white"
         dark
         :options="policyList"
-        @update:model-val="updatePolicyID(policyID)"
       >
         <template #selected-item="scope">
           <div class="ellipsis">
@@ -35,6 +34,13 @@ export default {
       ...mapState('api', [
         'policyID',
       ]),
+
+      policyIDInput: {
+        get() { return this.policyID },
+        set(policy) {
+          this.updatePolicyID(policy)
+        }
+      }
     },
 
     methods: {
