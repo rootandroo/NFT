@@ -3,17 +3,16 @@ from rest_framework import serializers
         
 
 class ProjectSerializer(serializers.ModelSerializer):
-    collections = serializers.StringRelatedField(many=True)
     class Meta:
         model = Project
-        fields = ['name', 'twitter', 'collections']
+        fields = ['name']
 
 
 class CollectionSerializer(serializers.ModelSerializer):
     distribution = serializers.JSONField()
     class Meta:
         model = Collection
-        fields = ['policy_id', 'project', 'included_keys', 'distribution']
+        fields = ['policy_id', 'project', 'included_keys', 'distribution', 'name']
 
 
 class AssetSerializer(serializers.ModelSerializer):
