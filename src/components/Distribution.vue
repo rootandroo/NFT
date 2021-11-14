@@ -19,7 +19,7 @@
           class="q-py-sm q-px-md"
         >
           <div 
-            v-if="includedKeys[trait] || !isTraitSelected(trait)"
+            v-if="collection.included_keys[trait] || !isTraitSelected(trait)"
           >
             <dist-checkbox 
               v-for="[option, count] in Object.entries(obj)"
@@ -68,14 +68,11 @@ export default {
   },
 
   computed: {
-    ...mapState([
-      'includedKeys'
-    ]),
-
     ...mapState('api', [
       'tags',
       'values',
-      'circulation'
+      'circulation',
+      'collection'
     ]),
 
     ...mapGetters('api', [
@@ -87,7 +84,7 @@ export default {
       return string => {
         return string.substring(string.lastIndexOf('_') + 1);
       }
-    },
+    }
   }
 }
 </script>

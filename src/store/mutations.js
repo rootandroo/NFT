@@ -3,8 +3,8 @@ export default {
       state.projectList = list
     },
 
-    updatePolicyList (state, list) {
-      state.policyList = list
+    updateCollectionList (state, list) {
+      state.collectionList = list
     },
 
     updateAssetList (state, {append, list}) {
@@ -14,13 +14,5 @@ export default {
       } else {
         state.assetList = list
       }
-    },
-
-    updateDistribution (state, distribution) {
-      state.distribution = distribution
-    },
-
-    updateKeys (state, keys) {
-      state.includedKeys = keys
     },
 }

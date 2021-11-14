@@ -12,7 +12,7 @@ const routes = [
     component: Home
   },
   {
-    path: '/:project',
+    path: '/:project/:drop?',
     name: 'AssetList',
     component: AssetList
   },

@@ -72,6 +72,12 @@ export default {
       sidebar: false,
     }
   },
+  
+  watch: {
+    '$store.state.assetList' () {
+      this.resetScrollArea()
+    }
+  },
 
   mounted () {
     this.setApi(URLS)
@@ -91,7 +97,13 @@ export default {
 
     ...mapActions('api', [
       'fetchProjects'
-    ])
+    ]),
+
+    resetScrollArea () {
+      if (this.$refs.scrollArea) {
+        this.$refs.scrollArea.setScrollPosition("vertical", 0);
+      }
+    },
   },
 }
 </script>

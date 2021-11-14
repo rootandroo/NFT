@@ -40,7 +40,7 @@
       </q-card>
     </div>
     <div 
-      v-if="includedKeys"
+      v-if="collection.included_keys"
       class="col-grow q-pt-md q-pl-md" 
     >
       <div class="rounded-borders bg-positive title q-pa-sm">
@@ -60,7 +60,7 @@
       <div class="wrapper q-mt-sm">
         <q-scroll-area class="fit">
           <q-card
-            v-for="key in Object.keys(includedKeys)"
+            v-for="key in Object.keys(collection.included_keys)"
             :key="key"
             class="q-mb-xs rounded-borders text-dark"
           >
@@ -70,10 +70,10 @@
                 class="q-ma-xs"
               >
                 <dist-checkbox 
-                  v-if="!includedKeys[key]"               
+                  v-if="!collection.included_keys[key]"               
                   :trait="key"
                   :option="getOption(key)"
-                  :count="distribution[key][getOption(key)]"
+                  :count="collection.distribution[key][getOption(key)]"
                   :tag-obj="values[key][getOption(key)]"
                   :is-active="isActive(key, getOption(key))"
                 />  
@@ -85,7 +85,7 @@
                   :key="elm"
                   :trait="key"
                   :option="elm"
-                  :count="distribution[key][elm]"
+                  :count="collection.distribution[key][elm]"
                   :tag-obj="values[key][elm]"
                   :is-active="isActive(key, elm)"
                 />
@@ -112,12 +112,8 @@ export default {
   props: ['src', 'asset', 'label', 'price'],
 
   computed: {
-    ...mapState([
-      'includedKeys',
-      'distribution'
-    ]),
-
     ...mapState('api', [
+      'collection',
       'values'
     ]),
   

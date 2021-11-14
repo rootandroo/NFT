@@ -10,7 +10,7 @@
     </q-item-section>
     <q-item-section side>
       <q-badge :class="[activeClass, 'bg-positive']">
-        {{ calcPercentage(count) }}
+        {{ count }} Assets
       </q-badge>
       <q-checkbox
         v-model="selectedTags"

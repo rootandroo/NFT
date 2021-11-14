@@ -10,15 +10,15 @@
         </q-item>
 
         <q-item class="q-mt-xs">
-          <sidebar-drop-select :policy-list="policyList" />
+          <sidebar-drop-select :collection-list="collectionList" />
         </q-item>
 
         <q-item class="q-mt-xs">
-          <sidebar-serial-select v-if="distribution" />
+          <sidebar-serial-select v-if="collection" />
         </q-item>
 
         <q-item class="q-mt-xs">
-          <q-item-section v-if="distribution">
+          <q-item-section v-if="collection">
             <q-item-label class="text-white text-body1">
               Filters
             </q-item-label>
@@ -29,8 +29,8 @@
     
         <q-item class="q-mt-xs q-mb-xl">
           <distribution
-            v-if="distribution"
-            :distribution="distribution"
+            v-if="collection?.distribution"
+            :distribution="collection.distribution"
           />
         </q-item>
       </q-scroll-area>
@@ -66,7 +66,9 @@ export default {
   },
 
   computed: {
-    ...mapState(["projectList", "policyList", "distribution"]),
+    ...mapState(["projectList", "collectionList"]),
+
+    ...mapState('api', ["collection"])
   },
 
 };

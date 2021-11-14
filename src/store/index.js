@@ -6,10 +6,8 @@ import mutations from './mutations'
 export default createStore({
   state: {
     projectList: [],
-    policyList: [],
+    collectionList: [],
     assetList: [],
-    distribution: null,
-    includedKeys: null
   },
 
   mutations,

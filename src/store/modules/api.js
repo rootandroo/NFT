@@ -4,7 +4,7 @@ import axios from "axios"
 const state = () => ({
   urls: {},
   headers: {'Authorization':''},
-  policyID: null,
+  collection: null,
   serial: null, // Unecessary after Asset Modal is Linked with Vue Router
   nextURL: null, // Next Page URL
   tags: [], // Filter by {attribute:option}
@@ -38,8 +38,8 @@ const getters = {
     return result
   },
 
-  createTag: (state, getters, rootState) => (trait, option) => {
-    return rootState.includedKeys[trait] ? {[trait]:new Array(option)} : {[trait]:option}
+  createTag: (state, getters) => (trait, option) => {
+    return state.collection.included_keys[trait] ? {[trait]:new Array(option)} : {[trait]:option}
   },
 
   calcPercentage: (state) => (count) => {
@@ -58,33 +58,15 @@ const actions = {
       })
   },
 
-  fetchPolicies ({ commit, state }, project) {
+  async fetchCollections ({ commit, state }, project) {
     const config = {
           headers: state.headers,
           params: { project:project }
     }
-    axios
-      .get(state.urls.list_collection, config)
-      .then(response => {
-        var policyList = response.data.results.map(collection => collection.policy_id)
-        commit('updatePolicyList', policyList, {root:true})
-              
-        // Set Selected policyID
-        if (policyList.length == 1) {
-          commit('updatePolicyID', policyList[0])
-        }
-      })
-  },
-
-  fetchDistribution({ commit, state, getters }) {
-    const config = { headers: state.headers }
-    axios
-      .get(state.urls.list_collection + state.policyID + '/', config)
-      .then(response => {
-        commit('updateDistribution', response.data.distribution, {root:true})
-        commit('updateKeys', response.data.included_keys, {root:true})
-        commit('updateValues', getters.createValues(response.data.distribution))
-      })
+    const resp = await axios.get(state.urls.list_collection, config)
+    var collectionList = resp.data.results
+    commit('updateCollectionList', collectionList, {root:true})      
+    return collectionList        
   },
 
   async fetchAssets ({ commit, state }, append=false) {
@@ -93,7 +75,7 @@ const actions = {
     const config = {
       headers: state.headers,
       params: {
-        policy_id: state.policyID,          
+        policy_id: state.collection.policy_id,          
         query_obj: JSON.stringify(state.tags),
         rank_filter: state.rankFilter,
         price_filter: state.priceFilter,
@@ -124,8 +106,8 @@ const mutations = {
       state.headers.Authorization = 'Token'.concat(' ',token)
   },
 
-  updatePolicyID (state, policyID) {
-    state.policyID = policyID
+  updateCollection (state, collection) {
+    state.collection = {...state.collection, ...collection}
   },
 
   updateSerial (state, serial) {

@@ -1,6 +1,6 @@
 <template>
-  <q-page v-if="policyID">
-    <q-infinite-scroll 
+  <q-page v-if="collection">
+    <q-infinite-scroll
       :offset="250"
       :debounce="700"
       @load="onLoad"
@@ -22,89 +22,99 @@
 </template>
 
 <script>
-import AssetCard from '../components/AssetCard.vue'
-import { mapActions, mapState, mapMutations } from 'vuex'
+import AssetCard from "../components/AssetCard.vue";
+import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
 
 export default {
-  components: { 
-    AssetCard
+  components: {
+    AssetCard,
   },
-  
-  data () {
-      return {
-          nextPage: null
-      }
+
+  data() {
+    return {
+      nextPage: null,
+    };
   },
 
   computed: {
-      ...mapState('api', [
-          'policyID',
-          'nextURL'
-      ]),
+    ...mapState("api", [
+      "nextURL",
+      "collection"
+    ]),
 
-      ...mapState([
-          'assetList'
-      ]),
+    ...mapState(["assetList"]),
+
+    ...mapGetters('api', ["createValues"])
   },
 
   watch: {
-      '$route.params.project' (project) {
-          this.fetchPolicies(project)
-      },
-      policyID (newPolicy, oldPolicy) {
-          console.log(`Updating from ${oldPolicy} to ${newPolicy}`)
-           
-          //  Reset Filters
-          this.updateTags([]) 
-          this.updatePriceFilter({min:null, max:null})
-          this.updateRankFilter({min:null, max:null})
+    "$route.params.project"(project) {
+      this.collectionRouteMatch(project, this.$route.params.drop)
+    },
+    collection(newCol, oldCol) {
+      console.log(`Updating from ${oldCol?.policy_id} to ${newCol.policy_id}`);
+      this.$router.push({ path: `/${this.$route.params.project}/${newCol.name.replace(/ /g,'_')}`})
 
-          this.resetScrollArea()
-          this.fetchAssets().then(resp => {
-            this.updateCirculation(resp.found)
-          })
-          this.fetchDistribution() 
-      }
+      //  Reset Filters
+      this.updateTags([]);
+      this.updatePriceFilter({ min: null, max: null });
+      this.updateRankFilter({ min: null, max: null });
+
+      this.fetchAssets().then((resp) => {
+        this.updateCirculation(resp.found);
+      });
+      var distribution = this.collection?.distribution
+      if (distribution) { this.updateValues(this.createValues(distribution)) }
+    },
   },
 
-  created () {
-      this.fetchPolicies(this.$route.params.project)
+  created() {
+    this.collectionRouteMatch(this.$route.params.project, this.$route.params.drop)
   },
 
   methods: {
-      ...mapActions('api', [
-          'fetchPolicies',
-          'fetchAssets',
-          'fetchDistribution'
-      ]),
+    ...mapActions("api", [
+      "fetchCollections",
+      "fetchAssets",
+      "fetchDistribution",
+    ]),
 
-      ...mapMutations('api', [
-        'updateTags',
-        'updateCirculation',
-        "updatePriceFilter",
-        "updateRankFilter"
-      ]),
+    ...mapMutations("api", [
+      "updateValues",
+      "updateCollection",
+      "updateTags",
+      "updateCirculation",
+      "updatePriceFilter",
+      "updateRankFilter",
+    ]),
 
-      onLoad (index, done) {
-        if (this.nextURL) {
-          this.fetchAssets({append:true})
+    // Match route params to collection
+    collectionRouteMatch (project, drop) {
+      var drop = drop.replace(/_/g, " ");
+      this.fetchCollections(project).then(collections => {
+        var collection = collections.filter(col => { return col.name == drop })
+        if (collection.length) {
+          this.updateCollection(collection[0])
+        } else {
+          this.updateCollection(collections[0])
         }
-        done()
-      },
+      })
+    },
 
-      resetScrollArea () {
-        if (this.$refs.scrollArea) {
-          this.$refs.scrollArea.setScrollPosition('vertical', 0) 
-        }
+    onLoad (index, done) {
+      if (this.nextURL) {
+        this.fetchAssets({ append: true });
       }
-  }    
-}
+      done();
+    },
+  },
+};
 </script>
 
 <style>
 .card-group {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
 }
 
 .q-intersection {

@@ -2,13 +2,14 @@
   <q-item-section>
     <div style="max-width: 268px">
       <q-select
-        v-model="policyIDInput"
+        v-model="collectionInput"
         label="Select Drop"
         label-color="white"
         options-dense
         options-selected-class="text-white"
         dark
-        :options="policyList"
+        :options="collectionList"
+        option-label="name"
       >
         <template #selected-item="scope">
           <div class="ellipsis">
@@ -24,7 +25,7 @@
 import { mapMutations, mapState } from 'vuex'
 export default {
     props: {
-        policyList: {
+        collectionList: {
             type: Array,
             required: true
         }
@@ -32,20 +33,20 @@ export default {
 
     computed: {
       ...mapState('api', [
-        'policyID',
+        'collection',
       ]),
 
-      policyIDInput: {
-        get() { return this.policyID },
-        set(policy) {
-          this.updatePolicyID(policy)
+      collectionInput: {
+        get() { return this.collection?.name },
+        set(collection) {
+          this.updateCollection(collection)
         }
       }
     },
 
     methods: {
         ...mapMutations('api', [
-          'updatePolicyID',
+          'updateCollection',
         ]),
     }
 }
