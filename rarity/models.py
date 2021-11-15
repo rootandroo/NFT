@@ -31,7 +31,7 @@ class Collection(models.Model):
         ordering = ['release_date']
 
     def __str__(self):
-        return f"{self.project}"
+        return f"{self.name}"
     
     def save(self, *args, **kwargs):
         # Fetch and Create Assets

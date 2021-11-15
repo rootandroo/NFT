@@ -9,7 +9,7 @@ import json, logging
 logger = logging.getLogger(__name__)
 
 # Views
-def assets(request, project=None):
+def assets(request, project=None, drop=None):
     return render(request, 'assets.html')
 
 # API Endpoints
