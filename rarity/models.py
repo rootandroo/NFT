@@ -28,10 +28,10 @@ class Collection(models.Model):
     image_url = models.URLField(max_length=200, null=True, blank=True)
     
     class Meta:
-        ordering = ['project']
+        ordering = ['release_date']
 
     def __str__(self):
-        return f"{self.project}"
+        return f"{self.name}"
     
     def save(self, *args, **kwargs):
         # Fetch and Create Assets
@@ -50,7 +50,7 @@ class Collection(models.Model):
         
         self.assets.filter(onchain_metadata__contains={"":None}).delete()
 
-        if self.included_keys:
+        if self.included_keys and not self.distribution:
             # Update distribution
             keys = self.included_keys
             assets = self.assets.all()
@@ -97,7 +97,7 @@ class Collection(models.Model):
                     dist[key] = {}
                     dist[key][object] = 1
             else:
-                # Missing either or both of key:value pair
+                # Missing either key, value or both
                 asset.onchain_metadata[key] = "null"
                 asset.save()
 

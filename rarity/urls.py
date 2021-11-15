@@ -6,6 +6,7 @@ from rarity import views
 
 urlpatterns = [
     path('', views.assets, name='assets'),
+    path('<project>/<drop>', views.assets, name='assets'),
     path('<project>/', views.assets, name='assets')
 ]
 
