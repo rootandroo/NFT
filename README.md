@@ -1,7 +1,9 @@
 ### TODO
 
 Frontend
-- [ ] Filter by Rank
+- Display 
+- [X] Filter by Rank
+- [X] Filter by Price
 - [ ] Link to Asset Modal (TLD/:project/:drop/:serial)
     - [ ] Link to tweet
 - [ ] Add Selected Chain Indicator
@@ -17,6 +19,17 @@ Frontend
 - ~~Add Close Button To AssetModal~~
 
 Backend
+- [ ] Factor Out Distribution
+    - [ ] Create Category Model
+        - name
+        - traits []
+        - trait count {}
+        - trait rarity_score {}
+        - trait custom_score {}
+        - trait normalized_score {}
+        - trait floor {}
+        - foreign key: Collection()
+    - Serialize Collection.categories
 - [X] Periodic Price Fetching
 - [ ] Improve Price Fetching Speed
 - [ ] Streamline Project Listing
